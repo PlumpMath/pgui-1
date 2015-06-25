@@ -13,6 +13,124 @@ Then in your game make a script and just import the module:
 
 And start making awesome GUIs :)
 
+To use the default dark skin provided in "skins.zip", just extract everything in your game's folder and then
+do:
+```python
+  o["manager"].loadTheme("path_to_theme.json")
+```
+# You can create your own skins!
+In order to do this, you're going to need to draw every GUI texture (use the dark skin textures as a base),
+and then make a dictionary with every texture you just draw, here's an example:
+```python
+  MySkin = {
+    "PGUI_SKIN": 0, # This is a signature. If your skin doesn't have this, it's not gonna work.
+    "button_normal": {
+        "padding": [6, 6, 6, 6],
+        "image": "//skins/default/button_normal.png"
+    },
+    "button_hover": {
+        "padding": [6, 6, 6, 6],
+        "image": "//skins/default/button_hover.png"
+    },
+    "button_click": {
+        "padding": [6, 6, 6, 6],
+        "image": "//skins/default/button_click.png"
+    },
+    "panel": {
+        "padding": [5, 5, 5, 5],
+        "image": "//skins/default/panel.png",
+        "x_text_margin": 4
+    },
+    "panel_round": {
+        "padding": [17, 13, 17, 13],
+        "image": "//skins/default/round_panel.png",
+        "x_text_margin": 15
+    },
+    "panel_dark": {
+        "padding": [5, 5, 5, 5],
+        "image": "//skins/default/panel_dark.png",
+        "x_text_margin": 4
+    },
+    "panel_down": {
+        "padding": [5, 5, 5, 5],
+        "image": "//skins/default/panel_down.png",
+        "x_text_margin": 4
+    },
+    "check_normal": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/check_normal.png"
+    },
+    "check_click": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/check_click.png"
+    },
+    "check_hover": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/check_hover.png"
+    },
+    "check_u_normal": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/check_u_normal.png"
+    },
+    "check_u_click": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/check_u_click.png"
+    },
+    "check_u_hover": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/check_u_hover.png"
+    },
+    "radio_normal": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/radio_normal.png"
+    },
+    "radio_click": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/radio_click.png"
+    },
+    "radio_hover": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/radio_hover.png"
+    },
+    "radio_u_normal": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/radio_u_normal.png"
+    },
+    "radio_u_click": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/radio_u_click.png"
+    },
+    "radio_u_hover": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/radio_u_hover.png"
+    },
+    "select": {
+        "padding": [2, 2, 2, 2],
+        "image": "//skins/default/selected.png"
+    },
+    "track_normal": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/track_normal.png"
+    },
+    "track_click": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/track_click.png"
+    },
+    "track_hover": {
+        "padding": [0, 0, 0, 0],
+        "image": "//skins/default/track_hover.png"
+    },
+    "bar": {
+        "padding": [2, 2, 2, 2],
+        "image": "//skins/default/bar.png"
+    }
+  }
+```
+Then, to apply your new theme, just do
+```python
+  o["manager"].theme = MySkin
+```
+
 # Basic GUI example
 Rotate and change the color of a Cube
 ```python
