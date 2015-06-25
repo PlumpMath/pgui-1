@@ -131,6 +131,10 @@ Then, to apply your new theme, just do
   o["manager"].theme = MySkin
 ```
 
+# What is "padding"
+Here's what it is:
+![PGUI's 9-Patch System](http://i.imgur.com/eEVwXWF.png)
+
 # Basic GUI example
 Rotate and change the color of a Cube
 ```python
