@@ -73,7 +73,6 @@ class new:
             
         sce = logic.getCurrentScene()
         sce.post_draw = [self.draw]
-        print(self.theme)
         
     def draw(self):
         width = render.getWindowWidth()

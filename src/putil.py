@@ -107,6 +107,11 @@ def bright(color, factor=1.0):
             color[3]]
 
 def h_draw_texture(id, w, h, bounds, coords):
+    bgl.glEnable(bgl.GL_TEXTURE_2D)
+    bgl.glBindTexture(bgl.GL_TEXTURE_2D, id)
+    bgl.glEnable(bgl.GL_BLEND)
+    bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+    
     B = bounds
     C = coords
     
@@ -135,12 +140,11 @@ def h_draw_texture(id, w, h, bounds, coords):
     bgl.glVertex2f(B[0], B[1]+B[3])
     bgl.glEnd()
 
+    bgl.glDisable(bgl.GL_TEXTURE_2D)
+
 def h_draw_ninepatch(id, w, h, bounds, padding, wire=False):
     if len(bounds) < 4: return
     if len(padding) < 4: return
-    
-    bgl.glEnable(bgl.GL_BLEND)
-    bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
     
     bgl.glColor4f(*(1,1,1,1))
     M = bgl.GL_LINE_LOOP if wire else bgl.GL_QUADS
@@ -148,9 +152,6 @@ def h_draw_ninepatch(id, w, h, bounds, padding, wire=False):
     B = bounds
     P = padding
     Q = [padding[0], padding[1], padding[2], padding[3]]
-        
-    bgl.glEnable(bgl.GL_TEXTURE_2D)
-    bgl.glBindTexture(bgl.GL_TEXTURE_2D, id)
     
     #h_draw_quad_wire(B)
     
@@ -533,8 +534,8 @@ class Texture2D:
         self.path = None
         self._interpolation = None
         
-        self.bind()
-        bgl.glTexEnvf(bgl.GL_TEXTURE_ENV, bgl.GL_TEXTURE_ENV_MODE, bgl.GL_MODULATE)
+        # self.bind()
+        # bgl.glTexEnvf(bgl.GL_TEXTURE_ENV, bgl.GL_TEXTURE_ENV_MODE, bgl.GL_MODULATE)
         self.interpolation = interpolation
         
         self.reload(path)
@@ -561,6 +562,8 @@ class Image(Texture2D):
         Texture2D.__init__(self, path, interp)
         
     def reload(self, path):
+        bgl.glEnable(bgl.GL_TEXTURE_2D)
+        
         if path == self.path: return
         if path in Image._cache:
             img = Image._cache[path]
@@ -576,8 +579,7 @@ class Image(Texture2D):
             return
         
         self.bind()
-        bgl.glTexImage2D(bgl.GL_TEXTURE_2D, 0, bgl.GL_RGBA, img.size[0], img.size[1], 0,
-                     bgl.GL_RGBA, bgl.GL_UNSIGNED_BYTE, data)
+        bgl.glTexImage2D(bgl.GL_TEXTURE_2D, 0, bgl.GL_RGBA, img.size[0], img.size[1], 0, bgl.GL_RGBA, bgl.GL_UNSIGNED_BYTE, data)
         
         self.size = img.size[:]
         self.path = path
