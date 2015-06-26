@@ -107,10 +107,13 @@ def bright(color, factor=1.0):
             color[3]]
 
 def h_draw_texture(id, w, h, bounds, coords):
+    
     bgl.glEnable(bgl.GL_TEXTURE_2D)
     bgl.glBindTexture(bgl.GL_TEXTURE_2D, id)
     bgl.glEnable(bgl.GL_BLEND)
     bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+    
+    bgl.glColor4f(*(1,1,1,1))
     
     B = bounds
     C = coords
@@ -140,13 +143,13 @@ def h_draw_texture(id, w, h, bounds, coords):
     bgl.glVertex2f(B[0], B[1]+B[3])
     bgl.glEnd()
 
+    bgl.glBindTexture(bgl.GL_TEXTURE_2D, 0)
     bgl.glDisable(bgl.GL_TEXTURE_2D)
 
 def h_draw_ninepatch(id, w, h, bounds, padding, wire=False):
     if len(bounds) < 4: return
     if len(padding) < 4: return
     
-    bgl.glColor4f(*(1,1,1,1))
     M = bgl.GL_LINE_LOOP if wire else bgl.GL_QUADS
     
     B = bounds
@@ -534,8 +537,8 @@ class Texture2D:
         self.path = None
         self._interpolation = None
         
-        # self.bind()
-        # bgl.glTexEnvf(bgl.GL_TEXTURE_ENV, bgl.GL_TEXTURE_ENV_MODE, bgl.GL_MODULATE)
+        self.bind()
+        bgl.glTexEnvf(bgl.GL_TEXTURE_ENV, bgl.GL_TEXTURE_ENV_MODE, bgl.GL_MODULATE)
         self.interpolation = interpolation
         
         self.reload(path)
@@ -577,6 +580,7 @@ class Image(Texture2D):
         if data == None:
             print("Could not load the image", img)
             return
+        
         
         self.bind()
         bgl.glTexImage2D(bgl.GL_TEXTURE_2D, 0, bgl.GL_RGBA, img.size[0], img.size[1], 0, bgl.GL_RGBA, bgl.GL_UNSIGNED_BYTE, data)
