@@ -47,6 +47,7 @@ class new:
         self.relativePos = [0, 0]
         
         self.theme = None
+        
     @property
     def bounds(self):
         return self._bounds
@@ -171,24 +172,7 @@ class new:
     
     def draw(self):
         if not self.visible: return
-    
-        width = render.getWindowWidth()
-        height = render.getWindowHeight()
-        
-        bgl.glMatrixMode(bgl.GL_PROJECTION)
-        bgl.glLoadIdentity()
-        bgl.glOrtho(0, width, height, 0, -1, 1)
-        bgl.glMatrixMode(bgl.GL_MODELVIEW)
-        bgl.glLoadIdentity()
-        
-        bgl.glDisable(bgl.GL_CULL_FACE)
-        bgl.glDisable(bgl.GL_LIGHTING)
-        bgl.glDisable(bgl.GL_DEPTH_TEST)
-        bgl.glEnable(bgl.GL_BLEND)
-        bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
-        bgl.glEnable(bgl.GL_LINE_SMOOTH)
-        bgl.glHint(bgl.GL_LINE_SMOOTH_HINT, bgl.GL_NICEST)
-        
+                
         if not fire_if_possible(self.on_draw, self):
             if self.focused:
                 h_draw_selected(self.bounds)

@@ -26,7 +26,9 @@ class new:
         self._controls = {}
         self._theme = None                
         logic.exit = ExitEvent(self)
-                        
+        
+        self.updating = False
+        
     def createRadioGroup(self, radios):
         if not isinstance(radios, list): return
         rg = PRadioGroup()
@@ -74,11 +76,41 @@ class new:
         print(self.theme)
         
     def draw(self):
+        width = render.getWindowWidth()
+        height = render.getWindowHeight()
+        
+        # 2D Projection
+        bgl.glMatrixMode(bgl.GL_PROJECTION)
+        bgl.glLoadIdentity()
+        bgl.glOrtho(0, width, height, 0, -1, 1)
+        bgl.glMatrixMode(bgl.GL_MODELVIEW)
+        bgl.glLoadIdentity()
+        
+        # 2D Shading (Flat)
+        bgl.glDisable(bgl.GL_CULL_FACE)
+        bgl.glDisable(bgl.GL_LIGHTING)
+        bgl.glDisable(bgl.GL_DEPTH_TEST)
+        
+        # 2D Blending (Alpha)
+        bgl.glEnable(bgl.GL_BLEND)
+        bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+        
+        # Line antialias
+        bgl.glEnable(bgl.GL_LINE_SMOOTH)
+        bgl.glHint(bgl.GL_LINE_SMOOTH_HINT, bgl.GL_NICEST)
+        
         ctrls = sorted(self._controls.values(), key=lambda x: x.zorder, reverse=True)
         for c in ctrls:
             c.draw()
     
     def update(self):
+        self.updating = True
         ctrls = sorted(self._controls.values(), key=lambda x: x.zorder, reverse=True)
         for c in ctrls:
-            c.update()
+            if self.updating:
+                oldv = c.visible
+                c.visible = False if c.visible else True
+                c.update()
+                c.visible = oldv
+            
+        self.updating = False
