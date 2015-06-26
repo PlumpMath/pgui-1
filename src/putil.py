@@ -106,8 +106,7 @@ def bright(color, factor=1.0):
             clamp(color[2] * factor, 0.0, 1.0),
             color[3]]
 
-def h_draw_texture(id, w, h, bounds, coords):
-    
+def h_draw_texture(id, w, h, bounds, coords):    
     bgl.glEnable(bgl.GL_TEXTURE_2D)
     bgl.glBindTexture(bgl.GL_TEXTURE_2D, id)
     bgl.glEnable(bgl.GL_BLEND)
@@ -155,8 +154,6 @@ def h_draw_ninepatch(id, w, h, bounds, padding, wire=False):
     B = bounds
     P = padding
     Q = [padding[0], padding[1], padding[2], padding[3]]
-    
-    #h_draw_quad_wire(B)
     
     # TOP LEFT
     if padding[0] > 0 and padding[1] > 0:
@@ -541,6 +538,9 @@ class Texture2D:
         bgl.glTexEnvf(bgl.GL_TEXTURE_ENV, bgl.GL_TEXTURE_ENV_MODE, bgl.GL_MODULATE)
         self.interpolation = interpolation
         
+        bgl.glTexParameteri(bgl.GL_TEXTURE_2D, bgl.GL_TEXTURE_WRAP_S, bgl.GL_REPEAT)
+        bgl.glTexParameteri(bgl.GL_TEXTURE_2D, bgl.GL_TEXTURE_WRAP_T, bgl.GL_REPEAT)
+        
         self.reload(path)
     
     @property
@@ -580,10 +580,11 @@ class Image(Texture2D):
         if data == None:
             print("Could not load the image", img)
             return
-        
-        
+                
         self.bind()
-        bgl.glTexImage2D(bgl.GL_TEXTURE_2D, 0, bgl.GL_RGBA, img.size[0], img.size[1], 0, bgl.GL_RGBA, bgl.GL_UNSIGNED_BYTE, data)
+        bgl.glTexImage2D(bgl.GL_TEXTURE_2D, 0, bgl.GL_RGBA, img.size[0],
+                         img.size[1], 0, bgl.GL_RGBA,
+                         bgl.GL_UNSIGNED_BYTE, data)
         
         self.size = img.size[:]
         self.path = path

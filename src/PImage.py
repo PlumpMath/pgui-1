@@ -14,7 +14,6 @@ class new(PControl.new):
         else:
             self._texture = None
         
-        self.foreColor = (1,1,1,1)
         self.textureCoords = [
             (0, 1),
             (1, 1),
