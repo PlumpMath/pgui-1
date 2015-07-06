@@ -3,8 +3,7 @@ import pgui.src.PControl as PControl
 from .putil import *
 from .pthemes import *
 from bge import render
-# This control is currently kinda buggy...
-# I would like some help to fix it, because I'm literally done with it :P
+
 class new(PControl.new):
     def __init__(self, bounds=[0, 0, 100, 12]):
         PControl.new.__init__(self, bounds)
@@ -17,13 +16,12 @@ class new(PControl.new):
         self.addb = PButton.new(text="", text_align=1)
         self.decb = PButton.new(text="", text_align=1)
         
-        _this = self
-        def addf(s, x, y, b):
-            _this.value -= 1
-        def decf(s, x, y, b):
-            _this.value += 1
-        self.addb.on_mouse_down = addf
-        self.decb.on_mouse_down = decf
+        def addf(s, d):
+            self.value -= 1
+        def decf(s, d):
+            self.value += 1
+        self.addb.on_mouse_click = addf
+        self.decb.on_mouse_click = decf
         
         self.knob_bounds = []
         
@@ -35,21 +33,23 @@ class new(PControl.new):
         self.ypos = 0
         self.on_value_change = None
         
-    def onClick(self, x, y, btn):
-        if btn == events.LEFTMOUSE:
+    def onMouseClick(self, d):
+        if d["button"] == events.LEFTMOUSE:
+            x, y = d["x"]+self.bounds[0], d["y"]+self.bounds[1] 
             if haspoint(self.knob_bounds, x, y):
                 self.drag = True
-                self.ey1 = self.ey2 = x
     
-    def onRelease(self, x, y, btn):
+    def onMouseRelease(self, d):
         self.drag = False
     
-    def onDrag(self, x, y, b):
+    def onMouseMove(self, d):
         if self.drag:
-            self.ey1 = y
-            dy = self.ey2 - self.ey1
-            self.value -= int(dy)            
-            self.ey2 = self.ey1
+            ky = ((self.knob_bounds[1]+self.knob_bounds[3]/2)-self.bounds[3])
+            dy = abs(d["y"]-ky)
+            if d["y"] > ky:
+                self.value += dy
+            elif d["y"] < ky:
+                self.value -= dy
 
     def update(self):        
         self.decb.bounds = [self.bounds[0], (self.bounds[1]+self.bounds[3])-self.bounds[2], self.bounds[2], self.bounds[2]]

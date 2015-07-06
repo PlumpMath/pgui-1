@@ -21,8 +21,8 @@ class new(PLabel.new):
             fire_if_possible(self.on_check, self, v)
         self._checked = v
     
-    def onClick(self, x, y, btn):
-        if btn == events.LEFTMOUSE:
+    def onMouseClick(self, d):
+        if d["button"] == events.LEFTMOUSE:
             self.checked = not self.checked
     
     def draw(self):

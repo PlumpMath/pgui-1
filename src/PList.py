@@ -19,10 +19,10 @@ class new(PControl.new):
         
         self.backColor = default["text_background"]
         
-    def onClick(self, x, y, btn):
-        if btn == events.LEFTMOUSE:
-            for k, v in self._ibounds.items():
-                if haspoint(v, x, y):
+    def onMouseClick(self, d):
+        if d["button"] == events.LEFTMOUSE:
+            for k, v in self._ibounds.items():                
+                if haspoint(v, self.worldPos[0], self.worldPos[1]):
                     self.selectedIndex = k
                     fire_if_possible(self.on_selected, self)
     

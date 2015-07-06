@@ -44,8 +44,6 @@ class new(PLabel.new):
         PLabel.new.update(self)
    
     def draw(self):
-        PControl.new.draw(self)
-        
         if not self.visible: return
         
         if self.drawFrame:
@@ -70,3 +68,4 @@ class new(PLabel.new):
             self._image.draw()
         
         PLabel.new.draw(self)
+        PControl.new.draw(self)

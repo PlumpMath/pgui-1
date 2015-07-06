@@ -19,32 +19,25 @@ class new(PControl.new):
     
         self.drag = False
         
-        self.ex1 = 0
-        self.ex2 = 0
-        
         self.khover = False
         self.ksize = 0
-    def onClick(self, x, y, btn):
-        if btn == events.LEFTMOUSE:
-            if haspoint(self.knob_bounds, x, y):
-                self.drag = True
-                self.ex1 = self.ex2 = x                
+        
+    def onMouseHold(self, data):
+        if data["button"] == events.LEFTMOUSE:
+            self.drag = True
     
-    def onRelease(self, x, y, btn):
+    def onMouseRelease(self, mouse_data):
         self.drag = False
     
-    def onDrag(self, x, y, b):
-        if haspoint(self.knob_bounds, x, y):
-            self.khover = True
-        else:
-            self.khover = False
-        
-        if self.drag:            
-            self.ex1 = x
-            dx = self.ex1 - self.ex2
-            self.value += int(dx)
-            self.ex2 = self.ex1
-    
+    def onMouseMove(self, data):
+        if self.drag:
+            kx = ((self.knob_bounds[0]+self.knob_bounds[2]/2)-self.bounds[0])
+            dx = abs(data["x"]-kx)
+            if data["x"] > kx:
+                self.value += dx
+            elif data["x"] < kx:
+                self.value -= dx
+
     def update(self):
         if not self.enabled: return
         
@@ -84,7 +77,7 @@ class new(PControl.new):
             else:
                 knb = kc
             
-            h_draw_ninepatch(pnl["image"].id, pnl["image"].size[0], pnl["image"].size[1], self.track, pnl["padding"])
+            h_draw_9patch_skin(pnl, self.track)
             h_draw_9patch_skin(knb, tbnds)
         
     @property

@@ -8,17 +8,23 @@ PGUI_MOUSE_CLICK = 2
 
 class new:
     def __init__(self, bounds=[0, 0, 100, 100]):
+        # Events
         self.on_mouse_hold = None
+        self.on_mouse_release = None
+        self.on_mouse_enter = None
+        self.on_mouse_leave = None        
         self.on_mouse_move = None
-        self.on_mouse_down = None
         self.on_mouse_up = None
+        self.on_mouse_click = None
+                
         self.on_key_down = None
         self.on_key_up = None
         self.on_key_press = None
+        
         self.on_draw = None
         
         self.enabled = True
-        self.name = "PControl"
+        self.name = "PControl" # default
         self.drawSelection = True
         self.fireClickOnEnter = True
         self.drawBorder = True
@@ -31,9 +37,6 @@ class new:
         self.hovered = False
         self.clicked = False
         self.clickhold = False
-        self.clickrelease = False
-        self.once = True
-        self.konce = False
         
         self.focused = False
         self.manager = None
@@ -46,10 +49,8 @@ class new:
         
         self.parent = None
         
-        self.x2 = 0
-        self.y2 = 0
-        
         self.relativePos = [0, 0]
+        self.worldPos = [0, 0]
         
         self.theme = None
         
@@ -61,28 +62,43 @@ class new:
     def bounds(self, b):
         self._obounds = [b[0], b[1], b[2], b[3]]
         self._bounds = b
-        
-    def onKeyTyped(self, key, shifted):
+    
+    def serialize(self, method=0):
+        if method == 0:
+            import json
+            return json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
+        else: # Add your serialization method here.
+            return False
+        return False
+    
+    # New event system.
+    def onMouseHold(self, mouse_data):
         pass
     
-    def onClick(self, x, y, btn):
+    def onMouseClick(self, mouse_data):
         pass
     
-    def onRelease(self, x, y, btn):
+    def onMouseRelease(self, mouse_data):
         pass
     
-    def onDown(self, x, y, btn):
+    def onMouseMove(self, mouse_data):
         pass
     
-    def onMove(self, x, y):
+    def onMouseEnter(self):
         pass
     
-    def onKeyEvent(self, key, state):
+    def onMouseLeave(self):
         pass
     
-    def onDrag(self, x, y, btn):
+    def onKeyDown(self, key_data):
         pass
-
+    
+    def onKeyUp(self, key_data):
+        pass
+    
+    def onKeyPress(self, key_data):
+        pass
+    
     def update(self):
         # TODO: Check this code to see if there's something you can fix.
         #       Debug to find errors/bugs.
@@ -92,95 +108,122 @@ class new:
         global pressed_current
         global pressed
         
+        # check theme
         if self.theme != None:
             if "PGUI_SKIN" not in self.theme:
                 self.theme = None
                 print("Invalid theme assigned to "+self.name)
         
+        # update child bounds
         if self.parent != None:
             if self.parent.layout == None:
                 self._bounds[0] = self._obounds[0] + self.parent.bounds[0]
                 self._bounds[1] = self._obounds[1] + self.parent.bounds[1]
-            
+        
         width = render.getWindowWidth()
         height = render.getWindowHeight()
-        ex = int(logic.mouse.position[0] * width)
-        ey = int(logic.mouse.position[1] * height)
         
-        px = ex - self.bounds[0]
-        py = ey - self.bounds[1]
+        ex = int(logic.mouse.position[0] * width)  # World X
+        ey = int(logic.mouse.position[1] * height) # World Y        
+        px = ex - self.bounds[0]                   # Local X
+        py = ey - self.bounds[1]                   # Local Y
+        
         self.relativePos = [px, py]
+        self.worldPos = [ex, ey]
         
         if self.focused:
             shift = k_down(events.LEFTSHIFTKEY) or k_down(events.RIGHTSHIFTKEY)
+            ctrl = k_down(events.LEFTCTRLKEY) or k_down(events.RIGHTCTRLKEY)
+            alt = k_down(events.LEFTALTKEY) or k_down(events.RIGHTALTKEY)
+            
             if self.fireClickOnEnter:
                 if k_pressed(events.ENTERKEY):
-                    self.onClick(ex, ey, events.LEFTMOUSE)
-                    fire_if_possible(self.on_mouse_down, self, ex, ey, events.LEFTMOUSE)
-                    
+                    t_mouse_data = {
+                        "button": events.LEFTMOUSE,
+                        "x": self.bounds[0]+1,
+                        "y": self.bounds[1]+1
+                    }
+                    self.onMouseClick(t_mouse_data)
+                    fire_if_possible(self.on_mouse_click, self, t_mouse_data)
+            
             for k, v in supported_keys.items():
+                key_data = {
+                    "key": v,
+                    "keyString": events.EventToString(v),
+                    "shift": shift,
+                    "control": ctrl,
+                    "alt": alt
+                }
                 if k_pressed(v):                    
-                    self.onKeyTyped(v, shift)
-                    fire_if_possible(self.on_key_press, self, v, shift)                    
+                    self.onKeyPress(key_data)
+                    fire_if_possible(self.on_key_press, self, key_data)                    
                 elif k_down(v):
-                    self.onKeyEvent(v, 0)
-                    fire_if_possible(self.on_key_down, self, v, 0)
+                    self.onKeyDown(key_data)
+                    fire_if_possible(self.on_key_down, self, key_data)
                 elif k_released(v):
-                    self.onKeyEvent(v, 1)
-                    fire_if_possible(self.on_key_up, self, v, 1)
-
-        k_mdown    =    k_mouse_action_down()
-        k_mclick   =   k_mouse_action_click()
-        k_mrelease = k_mouse_action_release()
-        
-        if k_mrelease["active"]:
-            fire_if_possible(self.on_mouse_up, self, ex, ey, k_mrelease["button"])
-            self.onRelease(px, py, k_mrelease["button"])
+                    self.onKeyUp(key_data)
+                    fire_if_possible(self.on_key_up, self, key_data)
                 
-        self.onDrag(ex, ey, 0)
-        
         if haspoint(self.bounds, ex, ey):
             self.hovered = True
             
-            self.clickhold = k_mdown["active"]
-            self.clicked = k_mdown["active"]
-            if not k_mdown["active"]:
-                self.once = True
-
-            if abs(px - self.x2) > 0 or abs(py - self.y2) > 0:
-                fire_if_possible(self.on_mouse_move, self, ex, ey)
-                self.onMove(ex, ey)
+            m_down    = k_mouse_action_down()
+            m_click   = k_mouse_action_click()
+            m_release = k_mouse_action_release()
             
-            if self.clickhold:
-                self.onDown(ex, ey, k_mdown["button"])
-                fire_if_possible(self.on_mouse_hold, self, ex, ey, k_mdown["button"])
+            mouse_move_data = {
+                "x": px,
+                "y": py
+            }
+            self.onMouseMove(mouse_move_data)
+            fire_if_possible(self.on_mouse_move, self, mouse_move_data)
             
-            if not logic.handled:
-                if self.clicked:                    
-                    if self.once:
-                        if logic.current_focus != None:
-                            logic.current_focus.focused = False
-                        logic.current_focus = self
-                        self.focused = True
-                        
-                        self.onClick(ex, ey, k_mdown["button"])
-                        fire_if_possible(self.on_mouse_down, self, ex, ey, k_mclick["button"])
-                        
-                        self.once = False
+            if m_click["active"]:                
+                self.clicked = True
+                
+                if not logic.handled:
+                    if logic.current_focus != None:
+                        logic.current_focus.focused = False
+                    logic.current_focus = self
+                    self.focused = True
+                    
+                    mouse_data = {
+                        "button": m_click["button"],
+                        "x": px,
+                        "y": py
+                    }
+                    self.onMouseClick(mouse_data)
+                    fire_if_possible(self.on_mouse_click, self, mouse_data)
                     logic.handled = True
                     
-            if not self.clicked:
+            if m_down["active"]:
+                self.clickhold = True
+                
+                mouse_data = {
+                    "button": m_down["button"],
+                    "x": px,
+                    "y": py
+                }
+                self.onMouseHold(mouse_data)
+                fire_if_possible(self.on_mouse_hold, self, mouse_data)
+            elif m_release["active"]:
+                mouse_data = {
+                    "button": m_release["button"],
+                    "x": px,
+                    "y": py
+                }
+                self.onMouseRelease(mouse_data)
+                fire_if_possible(self.on_mouse_release, self, mouse_data)
+                
+                self.clicked = False
+                self.clickhold = False
                 logic.handled = False
-                self.once = True
+                
         else:
             self.hovered = False
             if self.clicked:
                 self.clicked = False
-            self.once = True
         
-        self.x2 = px
-        self.y2 = py
-    
     def draw(self):
         if not self.visible: return
         
@@ -188,4 +231,3 @@ class new:
             if not fire_if_possible(self.on_draw, self):
                 if self.focused:
                     h_draw_selected(self.bounds)
-            

@@ -57,9 +57,11 @@ class new(PLabel.new):
         
         PLabel.new.update(self)
        
-    def onKeyTyped(self, key, shift):
+    def onKeyPress(self, data):
         if self.readOnly: return
-    
+        
+        key, shift = data["key"], data["shift"]
+        
         chr = events.EventToCharacter(key, shift)
         self.blink = True
         
@@ -80,7 +82,6 @@ class new(PLabel.new):
             self.text = ln
             self.caretx += 4
         elif key == events.BACKSPACEKEY:
-            #print(self.caretx, len(self.text))
             if self.caretx > 0:   
                 if self.caretx < len(self.text):
                     self.caretx -= 1                
@@ -116,8 +117,8 @@ class new(PLabel.new):
         for i in range(self.caretx):
             self.cx += self.fw + self.charSpacing
     
-    def onClick(self, x, y, btn):        
-        self.__click_char(x, y, btn)
+    def onMouseClick(self, d):        
+        self.__click_char(self.worldPos[0], self.worldPos[1], d["button"])
         self.__update_cx()
     
     def __click_char(self, x, y, btn):
@@ -182,7 +183,7 @@ class new(PLabel.new):
         offx = 0
         
         for i in range(len(self.text)):
-            charw = self.fw
+            charw, charh = blf.dimensions(self.fid, self.text[i])
             
             if offx+charw > self.bounds[2]: break
         
@@ -203,7 +204,7 @@ class new(PLabel.new):
                 charw, charh = blf.dimensions(self.fid, txt[i])
                 if i == self.caretx:
                     cx = self.bounds[0]+offx-3
-                    if cx < self.bounds[2]:
+                    if cx < self.bounds[0]+self.bounds[2]:
                         h_draw_text(self.fid, "|", [cx, self.bounds[1]-2, 1, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=False)
                     #break
                 offx += charw + self.charSpacing

@@ -20,12 +20,12 @@ class new(PControl.new):
         self.decb = PButton.new(text="", fontfile=fontfile, text_align=1)
         
         _this = self
-        def addf(s, x, y, b):
+        def addf(s, d):
             _this.value += 1
-        def decf(s, x, y, b):
+        def decf(s, d):
             _this.value -= 1
-        self.addb.on_mouse_down = addf
-        self.decb.on_mouse_down = decf
+        self.addb.on_mouse_click = addf
+        self.decb.on_mouse_click = decf
     
         self.on_value_change = None
         

@@ -396,7 +396,7 @@ def h_draw_quad_b(bounds, bg, type=2):
 
 def h_draw_quad_wire(bounds):
     if len(bounds) < 4: return
-    bgl.glLineWidth(1)
+    bgl.glLineWidth(0.5)
     bgl.glBegin(bgl.GL_LINE_LOOP)
     bgl.glVertex2f(bounds[0]          , bounds[1])
     bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
