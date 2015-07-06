@@ -1,6 +1,6 @@
 import pgui.src.PRadio as PRadio
 
-class PRadioGroup:
+class new:
     def __init__(self):
         self.radios = []
         self.previous = None

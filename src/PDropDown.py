@@ -14,6 +14,7 @@ class new(PButton.new):
         
         self.ibounds = []
         self.zorder = 99999
+        self.old_z = 0
         
         def sel(sender):
             self.selectedIndex = sender.selectedIndex
@@ -46,12 +47,14 @@ class new(PButton.new):
     def onClick(self, x, y, btn):
         if btn == events.LEFTMOUSE:
             self._list.enabled = not self._list.enabled     
-                   
+            oz = self.zorder
             if self._list.enabled:
                 max = 100
                 h = self._list.itemHeight * len(self._list.items) + 10
                 self.__nh = h if h < max else max
+                self.zorder = 99999
             else:
+                self.zorder = oz
                 self.__nh = 0
     
     def draw(self):
@@ -74,6 +77,7 @@ class new(PButton.new):
             self._list.visible = False
         
         self._list.theme = self.theme
+        self._list.zorder = self.zorder
         self._list.update()
         PButton.new.update(self)
     

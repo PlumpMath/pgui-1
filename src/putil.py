@@ -76,6 +76,17 @@ def k_mouse_action_release():
     
     return act
 
+def u_gen_name(availableNames, namestring):
+    cnt = 0
+    if isinstance(availableNames, list) or isinstance(availableNames, tuple):
+        for i in availableNames:
+            if i.startswith(namestring):
+                cnt += 1
+        if cnt == 0: cnt = ""
+    else:
+        cnt = ""
+    return namestring + cnt
+
 # Fire an event if it's possible
 def fire_if_possible(event, *args):
     if not hasattr(event, "__call__"): return False

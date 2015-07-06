@@ -6,6 +6,8 @@ from bge import render, logic, events, types
 
 from .putil import *
 from .pthemes import *
+import pgui.src.PContainer as PContainer
+import pgui.src.PRadioGroup as PRadioGroup
 
 class ExitEvent:
     def __init__(self, mgr):
@@ -31,15 +33,38 @@ class new:
         
     def createRadioGroup(self, radios):
         if not isinstance(radios, list): return
-        rg = PRadioGroup()
+        rg = PRadioGroup.new()
         for r in radios:
             if r in self._controls.keys():
                 rg.addToGroup(self._controls[r])
         return rg
     
-    def loadTheme(self, path):
-        self.theme = json.load(open(path))
+    def createContainer(self, controls={}, bounds=[0, 0, 100, 100]):
+        cnt = PContainer.new(bounds=bounds)
+        if isinstance(controls,  dict):
+            cnt.controls = controls
+        tmpc = self.controls
+        tmpc[u_gen_name(self.controls.keys(), "newContainer")] = cnt
+        self.controls = tmpc
+        return cnt
     
+    # Add a simple control
+    def addControl(self, name, control, mouse_down=None):
+        tmpc = self.controls
+        control.on_mouse_down = mouse_down
+        if name not in self.controls.keys():
+            tmpc[name] = control
+        self.controls = tmpc
+        return control
+    
+    def end(self):
+        self.controls = {}
+        sce = logic.getCurrentScene()
+        sce.post_draw = []
+    
+    def loadTheme(self, path):
+        self.theme = json.load(open(path))    
+        
     def saveTheme(self, path, theme):
         json.dump(theme, open(path, "w"))
     
@@ -98,13 +123,16 @@ class new:
         bgl.glEnable(bgl.GL_LINE_SMOOTH)
         bgl.glHint(bgl.GL_LINE_SMOOTH_HINT, bgl.GL_NICEST)
         
-        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder, reverse=True)
+        if len(self._controls.values()) <= 0: return
+        
+        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
         for c in ctrls:
             c.draw()
-    
+        
     def update(self):
+        if len(self._controls.values()) <= 0: return
         self.updating = True
-        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder, reverse=True)
+        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
         for c in ctrls:
             if self.updating:
                 oldv = c.visible

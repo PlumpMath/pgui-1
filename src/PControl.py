@@ -1,5 +1,6 @@
 from .putil import *
 from .pthemes import *
+from bge import events
 
 PGUI_MOUSE_DOWN = 1
 PGUI_MOUSE_UP = 0
@@ -18,6 +19,9 @@ class new:
         
         self.enabled = True
         self.name = "PControl"
+        self.drawSelection = True
+        self.fireClickOnEnter = True
+        self.drawBorder = True
         
         self.bounds = bounds
         
@@ -38,6 +42,7 @@ class new:
         self.enabled = True
         
         self.zorder = 0
+        self.layout_order = 0
         
         self.parent = None
         
@@ -93,8 +98,9 @@ class new:
                 print("Invalid theme assigned to "+self.name)
         
         if self.parent != None:
-            self._bounds[0] = self._obounds[0] + self.parent.bounds[0]
-            self._bounds[1] = self._obounds[1] + self.parent.bounds[1]
+            if self.parent.layout == None:
+                self._bounds[0] = self._obounds[0] + self.parent.bounds[0]
+                self._bounds[1] = self._obounds[1] + self.parent.bounds[1]
             
         width = render.getWindowWidth()
         height = render.getWindowHeight()
@@ -107,6 +113,11 @@ class new:
         
         if self.focused:
             shift = k_down(events.LEFTSHIFTKEY) or k_down(events.RIGHTSHIFTKEY)
+            if self.fireClickOnEnter:
+                if k_pressed(events.ENTERKEY):
+                    self.onClick(ex, ey, events.LEFTMOUSE)
+                    fire_if_possible(self.on_mouse_down, self, ex, ey, events.LEFTMOUSE)
+                    
             for k, v in supported_keys.items():
                 if k_pressed(v):                    
                     self.onKeyTyped(v, shift)
@@ -118,9 +129,9 @@ class new:
                     self.onKeyEvent(v, 1)
                     fire_if_possible(self.on_key_up, self, v, 1)
 
-        k_mclick = k_mouse_action_click()
+        k_mdown    =    k_mouse_action_down()
+        k_mclick   =   k_mouse_action_click()
         k_mrelease = k_mouse_action_release()
-        k_mdown = k_mouse_action_down()
         
         if k_mrelease["active"]:
             fire_if_possible(self.on_mouse_up, self, ex, ey, k_mrelease["button"])
@@ -136,7 +147,7 @@ class new:
             if not k_mdown["active"]:
                 self.once = True
 
-            if px - self.x2 > 0 or py - self.y2 > 0:
+            if abs(px - self.x2) > 0 or abs(py - self.y2) > 0:
                 fire_if_possible(self.on_mouse_move, self, ex, ey)
                 self.onMove(ex, ey)
             
@@ -172,8 +183,9 @@ class new:
     
     def draw(self):
         if not self.visible: return
-                
-        if not fire_if_possible(self.on_draw, self):
-            if self.focused:
-                h_draw_selected(self.bounds)
+        
+        if self.drawSelection:
+            if not fire_if_possible(self.on_draw, self):
+                if self.focused:
+                    h_draw_selected(self.bounds)
             

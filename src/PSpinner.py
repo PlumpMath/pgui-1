@@ -98,4 +98,3 @@ class new(PControl.new):
         h_draw_arrow(self.decb.bounds[0]+self.decb.bounds[2]/2, self.decb.bounds[1]+self.decb.bounds[3]/2, 4, False, color=self.foreColor)
         h_draw_arrow(self.addb.bounds[0]+self.addb.bounds[2]/2, self.addb.bounds[1]+self.addb.bounds[3]/2, 4, True, color=self.foreColor)
         
-        PControl.new.draw(self)

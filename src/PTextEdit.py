@@ -7,8 +7,7 @@ import pgui.src.PTimer as PTimer
 from .putil import *
 from .pthemes import *
 
-# This control is currently very (no, seriously) buggy...
-# I would like some help to fix it, because I'm literally done with it :P
+# This control is currently kinda buggy...
 class new(PLabel.new):
     def __init__(self, bounds=[0, 0, 100, 100], text="", fontfile="", font_size=14):
         PLabel.new.__init__(self, bounds, text, fontfile, font_size, 0, vertical_align=0)
@@ -115,8 +114,7 @@ class new(PLabel.new):
     def __update_cx(self):        
         self.cx = 0
         for i in range(self.caretx):
-            w, h = blf.dimensions(self.fid, self.text[i])
-            self.cx += w + self.charSpacing
+            self.cx += self.fw + self.charSpacing
     
     def onClick(self, x, y, btn):        
         self.__click_char(x, y, btn)
@@ -184,7 +182,7 @@ class new(PLabel.new):
         offx = 0
         
         for i in range(len(self.text)):
-            charw, charh = blf.dimensions(self.fid, self.text[i])
+            charw = self.fw
             
             if offx+charw > self.bounds[2]: break
         
