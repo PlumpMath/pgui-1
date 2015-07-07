@@ -54,9 +54,9 @@ class new(PControl.new):
         if self.theme == None:
             h_draw_quad_b(self.bounds, self.backColor, 2)
         else:
-            t = self.theme["panel"]              
-            h_draw_ninepatch(t["image"].id, t["image"].size[0], t["image"].size[1], self.bounds, t["padding"])
-        
+            t = self.theme["panel"]
+            h_draw_9patch_skin(t, self.bounds)
+            
         for i in range(len(self.items)):
             li = self.items[i]
             istr = str(li)

@@ -54,6 +54,7 @@ class new:
         
         self.theme = None
         
+        self.enter = False
     @property
     def bounds(self):
         return self._bounds
@@ -120,11 +121,7 @@ class new:
                 self._bounds[0] = self._obounds[0] + self.parent.bounds[0]
                 self._bounds[1] = self._obounds[1] + self.parent.bounds[1]
         
-        width = render.getWindowWidth()
-        height = render.getWindowHeight()
-        
-        ex = int(logic.mouse.position[0] * width)  # World X
-        ey = int(logic.mouse.position[1] * height) # World Y        
+        ex, ey = self.manager.mouse["x"], self.manager.mouse["y"]
         px = ex - self.bounds[0]                   # Local X
         py = ey - self.bounds[1]                   # Local Y
         
@@ -165,6 +162,11 @@ class new:
                     fire_if_possible(self.on_key_up, self, key_data)
                 
         if haspoint(self.bounds, ex, ey):
+            if not self.enter:
+                self.onMouseEnter()
+                fire_if_possible(self.on_mouse_enter, self)
+                self.enter = True
+                
             self.hovered = True
             
             m_down    = k_mouse_action_down()
@@ -217,10 +219,16 @@ class new:
                 
                 self.clicked = False
                 self.clickhold = False
-                logic.handled = False
                 
+                # Prevent from activating controls that are behind this control.
+                logic.handled = False                
         else:
             self.hovered = False
+            if self.enter:
+                self.onMouseLeave()
+                fire_if_possible(self.on_mouse_leave, self)
+                self.enter = False
+                
             if self.clicked:
                 self.clicked = False
         

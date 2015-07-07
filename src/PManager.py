@@ -31,6 +31,8 @@ class new:
         
         self.updating = False
         
+        self.mouse = {"x":0, "y":0}
+        
     def createRadioGroup(self, radios):
         if not isinstance(radios, list): return
         rg = PRadioGroup.new()
@@ -131,7 +133,18 @@ class new:
         
     def update(self):
         if len(self._controls.values()) <= 0: return
+                
+        width = render.getWindowWidth()
+        height = render.getWindowHeight()
+        
+        ex = int(logic.mouse.position[0] * width)  # World X
+        ey = int(logic.mouse.position[1] * height) # World Y
+        
+        self.mouse["x"] = ex
+        self.mouse["y"] = ey
+        
         self.updating = True
+        
         ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
         for c in ctrls:
             if self.updating:
@@ -139,5 +152,5 @@ class new:
                 c.visible = False if c.visible else True
                 c.update()
                 c.visible = oldv
-            
+        
         self.updating = False
