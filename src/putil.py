@@ -122,10 +122,10 @@ def gen_coords_from_bounds(b, w, h):
     h+=0.0001 #
     
     return [
-        (b[0]/w, b[1]/h),
+        (b[0]/w, b[1]/w),
         ((b[0]+b[2])/w, b[1]/h),
-        ((b[0]+b[2])/w, (b[1]+b[3])/h),
-        (b[0]/w, (b[1]+b[3])/h)
+        (b[0]+b[2], b[1]+b[3]),
+        (b[0], b[1]+b[3])
     ]
 
 def h_draw_texture(id, w, h, bounds, coords):    
@@ -138,6 +138,8 @@ def h_draw_texture(id, w, h, bounds, coords):
     
     B = bounds
     C = coords
+    
+    
     
     D = [
         (C[0][0]/w, C[0][1]/h),

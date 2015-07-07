@@ -33,6 +33,8 @@ class new:
         
         self.mouse = {"x":0, "y":0}
         
+        self._gfc = (0, 0, 0, 1)
+        
     def createRadioGroup(self, radios):
         if not isinstance(radios, list): return
         rg = PRadioGroup.new()
@@ -89,7 +91,18 @@ class new:
                     
             for k, c in self._controls.items():
                 c.theme = v
-
+    
+    @property
+    def globalForeColor(self):
+        return self._gfc
+    
+    @globalForeColor.setter
+    def globalForeColor(self, val):
+        self._gfc = val
+        for k, c in self._controls.items():
+            c.foreColor = val
+            print(c.foreColor)
+    
     @property
     def controls(self):
         return self._controls
