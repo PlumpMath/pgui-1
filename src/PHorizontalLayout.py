@@ -10,4 +10,4 @@ class new(PLayout.new):
 		control.bounds[1] = self.bounds[1] + self.padding[1]
 		control.bounds[3] = self.bounds[3] - self.padding[3]*2
 		if self.fit:
-			control.bounds[2] = (self.bounds[2] - (self.spacing+self.padding[2]*2)) / count
+			control.bounds[3] = (self.bounds[2] / count) - (self.spacing+(self.padding[2]/count))
