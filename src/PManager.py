@@ -101,7 +101,6 @@ class new:
         self._gfc = val
         for k, c in self._controls.items():
             c.foreColor = val
-            print(c.foreColor)
     
     @property
     def controls(self):
@@ -114,6 +113,7 @@ class new:
             c.name = k
             c.manager = self
             c.theme = self.theme
+            c.foreColor = self.globalForeColor
             
         sce = logic.getCurrentScene()
         sce.post_draw = [self.draw]

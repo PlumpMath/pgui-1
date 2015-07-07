@@ -124,7 +124,15 @@ class new:
                 self._bounds[0] = self._obounds[0] + self.parent.bounds[0]
                 self._bounds[1] = self._obounds[1] + self.parent.bounds[1]
         
-        ex, ey = self.manager.mouse["x"], self.manager.mouse["y"]
+        if self.manager != None:
+            ex, ey = self.manager.mouse["x"], self.manager.mouse["y"]
+        else:
+            # Get mouse position if the manager is null
+            width = render.getWindowWidth()
+            height = render.getWindowHeight()            
+            ex = int(logic.mouse.position[0] * width)  # World X
+            ey = int(logic.mouse.position[1] * height) # World Y 
+            
         px = ex - self.bounds[0]                   # Local X
         py = ey - self.bounds[1]                   # Local Y
         
