@@ -100,6 +100,9 @@ class new:
     def onKeyPress(self, key_data):
         pass
     
+    def onDraw(self):
+        pass
+    
     def update(self):
         # TODO: Check this code to see if there's something you can fix.
         #       Debug to find errors/bugs.
@@ -237,5 +240,6 @@ class new:
         
         if self.drawSelection:
             if not fire_if_possible(self.on_draw, self):
-                if self.focused:
+                if self.focused:                    
                     h_draw_selected(self.bounds)
+        self.onDraw()

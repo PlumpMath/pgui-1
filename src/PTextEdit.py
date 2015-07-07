@@ -7,30 +7,31 @@ import pgui.src.PTimer as PTimer
 from .putil import *
 from .pthemes import *
 
-# This control is currently kinda buggy...
+from bge import events
+
 class new(PLabel.new):
     def __init__(self, bounds=[0, 0, 100, 100], text="", fontfile="", font_size=14):
         PLabel.new.__init__(self, bounds, text, fontfile, font_size, 0, vertical_align=0)
 
         self.caretx = 0
         self.cx = 0
-        self.current_char = ''
         
         self.backColor = default["text_background"]
         self.foreColor = default["text_color"]
         
         self.shadow = False
         self.margin = 4
+        self.readOnly = False
+        self.charSpacing = 1
+        self.numbersOnly = False
+        self.masked = False
         
         self.fw, self.fh = blf.dimensions(self.fid, "Ee|{^")
-        
-        self.charSpacing = 1
-        
+                
+        self._tim = PTimer.new()
         self.blink = False
         
-        self._tim = PTimer.new()
-        
-        self.readOnly = False
+        self.on_text_changed = None
         
     @property
     def text(self):
@@ -67,6 +68,14 @@ class new(PLabel.new):
         
         ln = self.text
         
+        if self.numbersOnly:
+            if key not in [events.ONEKEY, events.TWOKEY, events.THREEKEY, events.FOURKEY, events.FIVEKEY,
+                events.SIXKEY, events.SEVENKEY, events.EIGHTKEY, events.NINEKEY, events.ZEROKEY, events.PAD0,
+                events.PAD1, events.PAD2, events.PAD3, events.PAD4, events.PAD5, events.PAD6, events.PAD7, 
+                events.PAD8, events.PAD9, events.PADPERIOD, events.PADMINUS, events.PERIODKEY, events.MINUSKEY,
+                events.LEFTARROWKEY, events.RIGHTARROWKEY, events.BACKSPACEKEY, events.DELKEY]:
+                return
+            
         if key == events.LEFTARROWKEY:            
             if self.caretx > 0:
                 self.caretx -= 1
@@ -108,6 +117,8 @@ class new(PLabel.new):
                 
             ln = ln.replace("\n", "")
             self.text = ln
+        
+        fire_if_possible(self.on_text_changed, self, ln)       
         self.text = ln
         
         self.__update_cx()
@@ -117,9 +128,10 @@ class new(PLabel.new):
         for i in range(self.caretx):
             self.cx += self.fw + self.charSpacing
     
-    def onMouseClick(self, d):        
+    def onMouseClick(self, d):
         self.__click_char(self.worldPos[0], self.worldPos[1], d["button"])
         self.__update_cx()
+        self.blink = True
     
     def __click_char(self, x, y, btn):
         if btn != events.LEFTMOUSE: return
@@ -129,8 +141,12 @@ class new(PLabel.new):
         
         for i in range(self.__renderable_right()-1):
             if not newOffset:
-                thisW, thisH = blf.dimensions(self.fid, self.text[i])
-                nextW, nextH = blf.dimensions(self.fid, self.text[i + 1])
+                if self.masked:
+                    thisW, thisH = blf.dimensions(self.fid, "*")
+                    nextW, nextH = blf.dimensions(self.fid, "*")
+                else:
+                    thisW, thisH = blf.dimensions(self.fid, self.text[i])
+                    nextW, nextH = blf.dimensions(self.fid, self.text[i + 1])
                 
                 fx = self.bounds[0] + (offsetx + (nextW+1) / 2)
                 if x <= fx+self.margin:
@@ -193,15 +209,21 @@ class new(PLabel.new):
             #bgl.glColor4f(*(0.0, 0.0, 1.0, 1.0))
             #h_draw_quad_wire(bnds)
             
-            h_draw_text(self.fid, self.text[i], [self.bounds[0]+offx, self.bounds[1], charw, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=self.shadow)
-            
+            if not self.masked:
+                h_draw_text(self.fid, self.text[i], [self.bounds[0]+offx, self.bounds[1], charw, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=self.shadow)
+            else:
+                charw, charh = blf.dimensions(self.fid, "*")
+                h_draw_text(self.fid, "*", [self.bounds[0]+offx, self.bounds[1], charw, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=self.shadow)
             offx += charw + self.charSpacing
+            
 #        h_draw_text(self.fid, "cx: %d, ln: %d, lt: %d" % (self.caretx, len(self.text), (self.caretx < len(self.text))), [10, 200, 100, 22], self.foreColor, margin=0, font_size=14, text_align=0, vertical_align=2)
         if self.focused and self.blink and not self.readOnly:
             offx = 0
             txt = self.text+" "
             for i in range(len(txt)):
                 charw, charh = blf.dimensions(self.fid, txt[i])
+                if self.masked:
+                    charw, charh = blf.dimensions(self.fid, "*")
                 if i == self.caretx:
                     cx = self.bounds[0]+offx-3
                     if cx < self.bounds[0]+self.bounds[2]:
