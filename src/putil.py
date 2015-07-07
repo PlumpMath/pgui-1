@@ -117,6 +117,17 @@ def bright(color, factor=1.0):
             clamp(color[2] * factor, 0.0, 1.0),
             color[3]]
 
+def gen_coords_from_bounds(b, w, h):
+    w+=0.0001 # Just to make sure we're not dividing by 0 =)
+    h+=0.0001 #
+    
+    return [
+        (b[0]/w, b[1]/h),
+        ((b[0]+b[2])/w, b[1]/h),
+        ((b[0]+b[2])/w, (b[1]+b[3])/h),
+        (b[0]/w, (b[1]+b[3])/h)
+    ]
+
 def h_draw_texture(id, w, h, bounds, coords):    
     bgl.glEnable(bgl.GL_TEXTURE_2D)
     bgl.glBindTexture(bgl.GL_TEXTURE_2D, id)
@@ -127,9 +138,6 @@ def h_draw_texture(id, w, h, bounds, coords):
     
     B = bounds
     C = coords
-    
-    w+=0.0001 # Just to make sure we're not dividing by 0 =)
-    h+=0.0001 #
     
     D = [
         (C[0][0]/w, C[0][1]/h),

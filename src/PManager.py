@@ -48,6 +48,8 @@ class new:
         tmpc = self.controls
         tmpc[u_gen_name(self.controls.keys(), "newContainer")] = cnt
         self.controls = tmpc
+        self.update()
+        
         return cnt
     
     # Add a simple control
@@ -57,6 +59,8 @@ class new:
         if name not in self.controls.keys():
             tmpc[name] = control
         self.controls = tmpc
+        self.update()
+        
         return control
     
     def end(self):
@@ -100,6 +104,8 @@ class new:
             
         sce = logic.getCurrentScene()
         sce.post_draw = [self.draw]
+        
+        self.update()
         
     def draw(self):
         width = render.getWindowWidth()
