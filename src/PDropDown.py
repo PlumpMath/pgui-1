@@ -14,7 +14,7 @@ class new(PButton.new):
         self.ibounds = []
         
         def sel(sender):
-            self.text = sender.items[sender.selectedIndex]
+            self.text = sender.items[sender.selectedIndex] if len(sender.items) > 0 else self.text
             sender.enabled = False
             sender.visible = False
                  
