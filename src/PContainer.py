@@ -26,7 +26,7 @@ class new(PControl.new):
         control.on_mouse_down = mouse_down
         if name not in self.controls.keys():
             tmpc[name] = control
-        self.controls = tmpc        
+        self.controls = tmpc
         return control
     
     @property
@@ -38,7 +38,9 @@ class new(PControl.new):
         self._controls = ctrl
         for k, c in self._controls.items():
             c.name = k
+            c.manager = self.manager
             c.parent = self
+            c.theme = self.theme
     
     def draw(self):
         PControl.new.draw(self)
