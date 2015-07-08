@@ -170,6 +170,7 @@ class new:
                 oldv = c.visible
                 c.visible = False if c.visible else True
                 c.update()
+                c.manager = self
                 c.visible = oldv
         
         self.updating = False
