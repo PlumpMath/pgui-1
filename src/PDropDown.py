@@ -8,24 +8,23 @@ class new(PButton.new):
     def __init__(self, bounds=[0, 0, 100, 100], text="DropDown"):
         PButton.new.__init__(self, bounds=bounds, text=text)
         self.margin = 2        
-        self.selectedIndex = -1
-        
+
         self.on_selected = None
         
         self.ibounds = []
         
         def sel(sender):
-            self.selectedIndex = sender.selectedIndex
             self.text = sender.items[sender.selectedIndex]
             sender.enabled = False
             sender.visible = False
-            
+                 
             fire_if_possible(self.on_selected, self)
             
             if sender.enabled:
                 self.__nh = 100
             else:
                 self.__nh = 0
+            self.requestFocus()
             
         self._list = PList.new(bounds=[bounds[0], bounds[1]+bounds[3], bounds[2], 0])
         self._list.enabled = False
@@ -33,6 +32,14 @@ class new(PButton.new):
         self._list.on_selected = sel
         
         self.__nh = 0
+    
+    @property
+    def selectedIndex(self):
+        return self._list.selectedIndex
+    
+    @selectedIndex.setter
+    def selectedIndex(self, i):
+        self._list.selectedIndex = i
     
     @property
     def items(self):
@@ -51,7 +58,7 @@ class new(PButton.new):
                 h = self._list.itemHeight * len(self._list.items) + 10
                 self.__nh = h if h < max else max
                 self.zorder = 99999                
-            else:
+            else:                
                 self.zorder = oz
                 self.__nh = 0
     

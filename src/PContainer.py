@@ -11,12 +11,12 @@ class new(PControl.new):
         self.layout = None
         self.drawSelection = False
     
-    def createSubContainer(self, controls={}, bounds=[0, 0, 100, 100]):
+    def createSubContainer(self, name="newSubContainer", controls={}, bounds=[0, 0, 100, 100]):
         cnt = new(bounds=bounds)
         if isinstance(controls,  dict):
             cnt.controls = controls
         tmpc = self._controls
-        tmpc[u_gen_name(self._controls.keys(), "newSubContainer")] = cnt
+        tmpc[u_gen_name(self._controls.keys(), name)] = cnt
         self.controls = tmpc
         return cnt
     

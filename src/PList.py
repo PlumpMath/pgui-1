@@ -8,8 +8,7 @@ class new(PControl.new):
     def __init__(self, bounds=[0, 0, 1, 1], fontname=""):
         PControl.new.__init__(self, bounds)        
         self.items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7"]        
-        self._ibounds = {}        
-        self.selectedIndex = -1    
+        self._ibounds = {}
         self._scroll = PVScroll.new(bounds=[bounds[0]+bounds[2]-12, bounds[1], 12, bounds[3]])        
         self.fid = blf.load(fontname) if fontname != "" else 0        
         self.itemHeight = 16
@@ -19,12 +18,22 @@ class new(PControl.new):
         
         self.backColor = default["text_background"]
         
+        self._selected = -1
+    
+    @property
+    def selectedIndex(self):
+        return self._selected
+    
+    @selectedIndex.setter
+    def selectedIndex(self, i):
+        self._selected = i
+        fire_if_possible(self.on_selected, self)
+        
     def onMouseClick(self, d):
         if d["button"] == events.LEFTMOUSE:
             for k, v in self._ibounds.items():                
                 if haspoint(v, self.worldPos[0], self.worldPos[1]):
                     self.selectedIndex = k
-                    fire_if_possible(self.on_selected, self)
     
     def update(self):
         howmanyitems = int(self.bounds[3] / self.itemHeight)
@@ -56,12 +65,14 @@ class new(PControl.new):
         else:
             t = self.theme["panel"]
             h_draw_9patch_skin(t, self.bounds)
-            
+                
         for i in range(len(self.items)):
             li = self.items[i]
             istr = str(li)
             
             bnds = self._ibounds[i]
+            #bgl.glColor4f(*(0.0, 0.0, 1.0, 1.0))
+            #h_draw_quad_wire(bnds)
             
             if bnds[1]+bnds[3] > self.bounds[1]+self.bounds[3] or bnds[1] < self.bounds[1]:
                 continue

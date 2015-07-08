@@ -72,6 +72,20 @@ class new:
             return False
         return False
     
+    def requestFocus(self):
+        if logic.current_focus != None:
+            logic.current_focus.focused = False
+        logic.current_focus = self
+        self.focused = True
+        logic.handled = True
+        #print(logic.current_focus)
+    
+    def __str__(self):
+        return self.name
+    
+    def __repr__(self):
+        return self.name
+    
     # New event system.
     def onMouseHold(self, mouse_data):
         pass
@@ -195,10 +209,7 @@ class new:
                 self.clicked = True
                 
                 if not logic.handled:
-                    if logic.current_focus != None:
-                        logic.current_focus.focused = False
-                    logic.current_focus = self
-                    self.focused = True
+                    self.requestFocus()
                     
                     mouse_data = {
                         "button": m_click["button"],
@@ -232,17 +243,17 @@ class new:
                 self.clickhold = False
                 
                 # Prevent from activating controls that are behind this control.
-                logic.handled = False                
+                logic.handled = False
         else:
             self.hovered = False
+            logic.handled = False
             if self.enter:
                 self.onMouseLeave()
                 fire_if_possible(self.on_mouse_leave, self)
-                self.enter = False
-                
+                self.enter = False                
             if self.clicked:
                 self.clicked = False
-        
+    
     def draw(self):
         if not self.visible: return
         

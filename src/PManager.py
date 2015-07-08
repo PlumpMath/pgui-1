@@ -43,12 +43,12 @@ class new:
                 rg.addToGroup(self._controls[r])
         return rg
     
-    def createContainer(self, controls={}, bounds=[0, 0, 100, 100]):
+    def createContainer(self, name="newContainer", controls={}, bounds=[0, 0, 100, 100]):
         cnt = PContainer.new(bounds=bounds)
         if isinstance(controls,  dict):
             cnt.controls = controls
         tmpc = self.controls
-        tmpc[u_gen_name(self.controls.keys(), "newContainer")] = cnt
+        tmpc[u_gen_name(self.controls.keys(), name)] = cnt
         self.controls = tmpc
         self.update()
         
