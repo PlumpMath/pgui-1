@@ -146,7 +146,7 @@ class new:
         
         if len(self._controls.values()) <= 0: return
         
-        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder, reverse=True)
+        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
         for c in ctrls:
             c.draw()
         

@@ -52,7 +52,8 @@ class new(PControl.new):
                 t = self.theme["panel"]
                 h_draw_ninepatch(t["image"].id, t["image"].size[0], t["image"].size[1], self.bounds, t["padding"])
 
-        for c, v in self._controls.items():
+        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
+        for v in ctrls:
             v.draw()
             
     def update(self):
