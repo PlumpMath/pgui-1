@@ -304,15 +304,15 @@ def h_draw_arrow_2(x, y, size, right=False, color=(0, 0, 0, 1)):
         bgl.glVertex2f(x+size/2, y+size)
         bgl.glEnd()
 
-def h_clip_begin(bounds):
+def h_clip_begin(bounds, padding=[0, 0, 0, 0]):
     vp = bgl.Buffer(bgl.GL_INT, 4)
     bgl.glGetIntegerv(bgl.GL_VIEWPORT, vp)
     
-    #print(vp[1] + vp[3])
+    B = [bounds[0]+padding[0], bounds[1]+padding[1], bounds[2]-padding[2]*2, bounds[3]-padding[3]*2]
     
-    scp = [0, 0, bounds[2], bounds[3]]
-    scp[0] = bounds[0] + vp[0]
-    scp[1] = bounds[1] + (vp[1]+20)
+    scp = [0, 0, B[2], B[3]]
+    scp[0] = B[0] + vp[0]
+    scp[1] = vp[1] + (vp[3] - B[1] - B[3])
     
     bgl.glEnable(bgl.GL_SCISSOR_TEST)
     bgl.glClearColor(0, 0, 0, 0)
@@ -327,7 +327,7 @@ def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, 
     width = render.getWindowWidth()
     height = render.getWindowHeight()
     
-    #h_clip_begin(bounds)
+    h_clip_begin(bounds)
     
     blf.size(fid, font_size, 72)
     if shadow:

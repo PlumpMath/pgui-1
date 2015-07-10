@@ -43,35 +43,37 @@ class new(PControl.new):
             c.theme = self.theme
     
     def draw(self):
-        if not self.visible: return
-        
-        PControl.new.draw(self)
-        
-        if self.drawFrame:
-            if self.theme == None:
-                h_draw_frame(self.bounds, self.backColor, self.border)
-            else:
-                t = self.theme["panel"]
-                h_draw_ninepatch(t["image"].id, t["image"].size[0], t["image"].size[1], self.bounds, t["padding"])
-
-        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
-        for v in ctrls:
-            v.draw()
+        if self.visible:
+            if self.drawFrame:
+                if self.theme == None:                    
+                    h_draw_frame(self.bounds, self.backColor, self.border)    
+                    h_clip_begin(self.bounds, padding=[1, 1, 1, 1])                
+                else:                    
+                    t = self.theme["panel"]                    
+                    h_draw_ninepatch(t["image"].id, t["image"].size[0], t["image"].size[1], self.bounds, t["padding"])
+                    h_clip_begin(self.bounds, padding=t["padding"])
+            
+            PControl.new.draw(self)
+            
+            ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
+            for v in ctrls:
+                v.draw()
+                
+            h_clip_end()
             
     def update(self):
-        if not self.enabled: return
-        
-        ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
-        for i in range(len(ctrls)):
-            v = ctrls[i]
-            v.foreColor = self.foreColor
-            if v.theme == None:
-                v.theme = self.theme
-                
-            if self.layout != None:
-                self.layout.bounds = self.bounds
-                self.layout.apply_layout(v, i, len(ctrls))
-                
-            v.update()
-            
+        if self.enabled and self.visible:
+            ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
+            for i in range(len(ctrls)):
+                v = ctrls[i]
+                v.foreColor = self.foreColor
+                if v.theme == None:
+                    v.theme = self.theme
+    
+                if self.layout != None:
+                    self.layout.bounds = self.bounds
+                    self.layout.apply_layout(v, i, len(ctrls))
+    
+                v.update()
+
         PControl.new.update(self)

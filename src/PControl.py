@@ -257,6 +257,6 @@ class new:
         
         if self.drawSelection:
             if not fire_if_possible(self.on_draw, self):
-                if self.focused:                    
+                if self.focused:
                     h_draw_selected(self.bounds)
         self.onDraw()
