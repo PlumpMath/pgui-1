@@ -310,12 +310,13 @@ def h_clip_begin(bounds, padding=[0, 0, 0, 0]):
     
     B = [bounds[0]+padding[0], bounds[1]+padding[1], bounds[2]-padding[2]*2, bounds[3]-padding[3]*2]
     
-    scp = [0, 0, B[2], B[3]]
-    scp[0] = B[0] + vp[0]
-    scp[1] = vp[1] + (vp[3] - B[1] - B[3])
+    # Do some math to invert the coords
+    scp = [0, 0, int(B[2]), int(B[3])]
+    scp[0] = int(B[0] + vp[0])
+    scp[1] = int(vp[1] + (vp[3] - B[1] - B[3]))
     
     bgl.glEnable(bgl.GL_SCISSOR_TEST)
-    bgl.glClearColor(0, 0, 0, 0)
+    bgl.glClearColor(0.0, 0.0, 0.0, 0.0)
     bgl.glClear(bgl.GL_COLOR_BUFFER_BIT | bgl.GL_SCISSOR_BIT)
     bgl.glScissor(*scp)
 
@@ -326,6 +327,9 @@ def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, 
     text = str(text)
     width = render.getWindowWidth()
     height = render.getWindowHeight()
+    
+    #bgl.glColor4f(*(1, 0, 0, 1))
+    #h_draw_quad_wire(bounds)
     
     h_clip_begin(bounds)
     

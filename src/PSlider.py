@@ -22,9 +22,10 @@ class new(PControl.new):
         self.khover = False
         self.ksize = 0
         
-    def onMouseHold(self, data):
+    def onMouseClick(self, data):
         if data["button"] == events.LEFTMOUSE:
             self.drag = True
+            self.onMouseMove(data)
     
     def onMouseRelease(self, mouse_data):
         self.drag = False
