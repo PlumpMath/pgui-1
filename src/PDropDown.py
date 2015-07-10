@@ -8,7 +8,8 @@ class new(PButton.new):
     def __init__(self, bounds=[0, 0, 100, 100], text="DropDown"):
         PButton.new.__init__(self, bounds=bounds, text=text)
         self.margin = 2        
-
+        self.visible = True
+        
         self.on_selected = None
         
         self.ibounds = []
@@ -86,3 +87,4 @@ class new(PButton.new):
         self._list.update()
         
         PButton.new.update(self)
+        

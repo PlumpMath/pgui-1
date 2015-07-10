@@ -4,10 +4,11 @@ from .putil import *
 from .pthemes import *
 from bge import render
 
+# needs fix
 class new(PControl.new):
     def __init__(self, bounds=[0, 0, 100, 12]):
         PControl.new.__init__(self, bounds)
-        
+    
         self._value = 0
         self._oldvalue = 0
         self._max = 100
@@ -20,23 +21,22 @@ class new(PControl.new):
             self.value -= 1
         def decf(s, d):
             self.value += 1
+            
         self.addb.on_mouse_click = addf
         self.decb.on_mouse_click = decf
         
         self.knob_bounds = []
+        self.innerb = []
         
         self.drag = False
-    
-        self.ey1 = 0
-        self.ey2 = 0
-    
+        
         self.ypos = 0
         self.on_value_change = None
-        
-    def onMouseClick(self, d):
+    
+    def onMouseHold(self, d):
         if d["button"] == events.LEFTMOUSE:
-            x, y = d["x"]+self.bounds[0], d["y"]+self.bounds[1] 
-            if haspoint(self.knob_bounds, x, y):
+            x, y = self.worldPos
+            if haspoint(self.innerb, x, y):
                 self.drag = True
     
     def onMouseRelease(self, d):
@@ -55,15 +55,15 @@ class new(PControl.new):
         self.decb.bounds = [self.bounds[0], (self.bounds[1]+self.bounds[3])-self.bounds[2], self.bounds[2], self.bounds[2]]
         self.addb.bounds = [self.bounds[0], self.bounds[1], self.bounds[2], self.bounds[2]]
         
-        innerb = [self.bounds[0], self.bounds[1]+self.bounds[2], self.bounds[2], self.bounds[3]-self.bounds[2]]
+        self.innerb = [self.bounds[0], self.bounds[1]+self.bounds[2], self.bounds[2], self.bounds[3]-self.bounds[2]]
 
-        vw = innerb[2]
+        vw = self.innerb[2]
         
-        h = innerb[3] - (vw+self.bounds[2])
+        h = self.innerb[3] - (vw+self.bounds[2])
         vy = ((self.min+self.value) / self.max) * h
         
         self.ypos = vy
-        self.knob_bounds = [self.bounds[0], vy+innerb[1], self.bounds[2], vw]
+        self.knob_bounds = [self.bounds[0], vy+self.innerb[1], self.bounds[2], vw]
     
         self.decb.theme = self.addb.theme = self.theme
         

@@ -33,8 +33,8 @@ class new(PControl.new):
         PControl.new.draw(self)
         
         if self.theme == None:
-            h_draw_frame_d(self.bounds, default["control"], type=1)
-            h_draw_frame_d(self.bar, default["button_hover"], type=2)
+            h_draw_frame_d(self.bounds, default["control"], type=2)
+            h_draw_frame_d(self.bar, default["button_hover"], type=1)
         else:
             bar = self.theme["bar"]
             pnl = self.theme["panel"]

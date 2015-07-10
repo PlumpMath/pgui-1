@@ -304,10 +304,28 @@ def h_draw_arrow_2(x, y, size, right=False, color=(0, 0, 0, 1)):
         bgl.glVertex2f(x+size/2, y+size)
         bgl.glEnd()
 
+def h_clip_begin(bounds):
+    vp = bgl.Buffer(bgl.GL_INT, 4)
+    bgl.glGetIntegerv(bgl.GL_VIEWPORT, vp)
+    
+    scp = [0, 0, bounds[2], bounds[3]]
+    scp[0] = bounds[0] + vp[0]
+    scp[1] = vp[3] - (bounds[1] + vp[1])
+    
+    bgl.glEnable(bgl.GL_SCISSOR_TEST)
+    bgl.glClearColor(0, 0, 0, 0)
+    bgl.glClear(bgl.GL_COLOR_BUFFER_BIT | bgl.GL_SCISSOR_BIT)
+    bgl.glScissor(*scp)
+
+def h_clip_end():
+    bgl.glDisable(bgl.GL_SCISSOR_TEST)
+
 def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, vertical_align=0, shadow=False):
     text = str(text)
     width = render.getWindowWidth()
     height = render.getWindowHeight()
+    
+    #h_clip_begin(bounds)
     
     blf.size(fid, font_size, 72)
     if shadow:
@@ -351,6 +369,8 @@ def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, 
         
     bgl.glScalef(1.0, 1.0, 1.0)
     bgl.glPopMatrix()
+    
+    #h_clip_end()
 
 # type: 1 = Raised, 2 = Sunken, 0 = None
 def h_draw_frame_d(bounds, color, type=1):
@@ -427,23 +447,6 @@ def h_draw_rect(bounds):
     bgl.glVertex2f(bounds[0]+bounds[2], bounds[1]+bounds[3])
     bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
     bgl.glEnd()
-
-# This does not work.
-def h_clip_begin(bounds):
-    vp = bgl.Buffer(bgl.GL_INT, 4)
-    bgl.glGetIntegerv(bgl.GL_VIEWPORT, vp)
-
-    scp = [0, 0, bounds[2], bounds[3]]
-    scp[0] = vp[0] + bounds[0]
-    scp[1] = (vp[1] + bounds[1])
-        
-    bgl.glEnable(bgl.GL_SCISSOR_TEST)
-    bgl.glClearColor(0.0, 0.0, 0.0, 0.0)
-    bgl.glClear(bgl.GL_SCISSOR_BIT | bgl.GL_COLOR_BUFFER_BIT)
-    bgl.glScissor(*scp)
-
-def h_clip_end():
-    bgl.glDisable(bgl.GL_SCISSOR_TEST)
 
 def h_draw_button(ncolor, bounds, hover, click):
     if not hover and not click:
