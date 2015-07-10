@@ -119,7 +119,8 @@ class new:
     def update(self):
         # TODO: Check this code to see if there's something you can fix.
         #       Debug to find errors/bugs.
-    
+        
+        if not self.visible: return
         if not self.enabled: return
         
         global pressed_current

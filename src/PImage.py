@@ -8,11 +8,10 @@ from bge import texture
 class new(PControl.new):
     def __init__(self, bounds=[0, 0, 100, 100], image_path=""):
         PControl.new.__init__(self, bounds)        
-
+        self._texture = None
+        
         if image_path != "":
-                self._texture = Image(image_path)
-        else:
-            self._texture = None
+            self._texture = Image(image_path)
         
         self.textureCoords = [
             (0, 1),
@@ -69,4 +68,7 @@ class new(PControl.new):
     
     @imagePath.setter
     def imagePath(self, path):
-        self._texture.reload(path)
+        if self._texture != None:
+            self._texture.reload(path)
+        else:
+            self._texture = Image(path)

@@ -43,6 +43,8 @@ class new(PControl.new):
             c.theme = self.theme
     
     def draw(self):
+        if not self.visible: return
+        
         PControl.new.draw(self)
         
         if self.drawFrame:
@@ -57,6 +59,9 @@ class new(PControl.new):
             v.draw()
             
     def update(self):
+        if not self.visible: return
+        if not self.enabled: return
+        
         ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
         for i in range(len(ctrls)):
             v = ctrls[i]
