@@ -14,7 +14,6 @@ class new:
         self.on_mouse_enter = None
         self.on_mouse_leave = None        
         self.on_mouse_move = None
-        self.on_mouse_up = None
         self.on_mouse_click = None
                 
         self.on_key_down = None
@@ -23,11 +22,9 @@ class new:
         
         self.on_draw = None
         
-        self.enabled = True
         self.name = "PControl" # default
         self.drawSelection = True
         self.fireClickOnEnter = True
-        self.drawBorder = True
         
         self.bounds = bounds
         
@@ -205,10 +202,9 @@ class new:
             self.onMouseMove(mouse_move_data)
             fire_if_possible(self.on_mouse_move, self, mouse_move_data)
             
-            if m_click["active"]:                
-                self.clicked = True
-                
-                if not logic.handled:
+            if not logic.handled:                
+                if m_click["active"]:                
+                    self.clicked = True                
                     self.requestFocus()
                     
                     mouse_data = {
@@ -220,17 +216,19 @@ class new:
                     fire_if_possible(self.on_mouse_click, self, mouse_data)
                     logic.handled = True
                     
-            if m_down["active"]:
-                self.clickhold = True
+                if m_down["active"]:
+                    self.clickhold = True
+                    
+                    mouse_data = {
+                        "button": m_down["button"],
+                        "x": px,
+                        "y": py
+                    }
+                    self.onMouseHold(mouse_data)
+                    fire_if_possible(self.on_mouse_hold, self, mouse_data)
+                    logic.handled = True
                 
-                mouse_data = {
-                    "button": m_down["button"],
-                    "x": px,
-                    "y": py
-                }
-                self.onMouseHold(mouse_data)
-                fire_if_possible(self.on_mouse_hold, self, mouse_data)
-            elif m_release["active"]:
+            if m_release["active"]:
                 mouse_data = {
                     "button": m_release["button"],
                     "x": px,
@@ -246,11 +244,10 @@ class new:
                 logic.handled = False
         else:
             self.hovered = False
-            logic.handled = False
             if self.enter:
                 self.onMouseLeave()
                 fire_if_possible(self.on_mouse_leave, self)
-                self.enter = False                
+                self.enter = False                             
             if self.clicked:
                 self.clicked = False
     

@@ -164,7 +164,7 @@ class new:
         
         self.updating = True
         
-        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
+        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder, reverse=True)
         for c in ctrls:
             if self.updating:
                 oldv = c.visible
