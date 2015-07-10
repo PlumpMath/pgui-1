@@ -308,9 +308,11 @@ def h_clip_begin(bounds):
     vp = bgl.Buffer(bgl.GL_INT, 4)
     bgl.glGetIntegerv(bgl.GL_VIEWPORT, vp)
     
+    #print(vp[1] + vp[3])
+    
     scp = [0, 0, bounds[2], bounds[3]]
     scp[0] = bounds[0] + vp[0]
-    scp[1] = vp[3] - (bounds[1] + vp[1])
+    scp[1] = bounds[1] + (vp[1]+20)
     
     bgl.glEnable(bgl.GL_SCISSOR_TEST)
     bgl.glClearColor(0, 0, 0, 0)
@@ -370,7 +372,7 @@ def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, 
     bgl.glScalef(1.0, 1.0, 1.0)
     bgl.glPopMatrix()
     
-    #h_clip_end()
+    h_clip_end()
 
 # type: 1 = Raised, 2 = Sunken, 0 = None
 def h_draw_frame_d(bounds, color, type=1):

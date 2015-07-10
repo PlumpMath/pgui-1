@@ -59,7 +59,6 @@ class new(PControl.new):
             v.draw()
             
     def update(self):
-        if not self.visible: return
         if not self.enabled: return
         
         ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
