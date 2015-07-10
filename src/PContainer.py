@@ -14,21 +14,24 @@ class new(PControl.new):
     
     def createSubContainer(self, name="newSubContainer", controls={}, bounds=[0, 0, 100, 100]):
         cnt = new(bounds=bounds)
-        if isinstance(controls,  dict):
-            cnt.controls = controls
-        self.controls[u_gen_name(self._controls.keys(), name)] = cnt
-        self.__refreshControls()
-        self.update()
-        return cnt
+        cnt.controls = controls
+        
+        return self.addControl(name, cnt)
     
     # Add a simple control
     def addControl(self, name, control, mouse_down=None):
+        print(self.controls)
+        
         control.on_mouse_down = mouse_down
-        control.parent = self
-        if name not in self.controls.keys():
-            self.controls[name] = control
-        self.__refreshControls()
+        
+        nname = u_gen_name(self.controls.keys(), name)
+        tmpc = self.controls.copy()
+        tmpc[nname] = control
+        self.controls = tmpc
+        
+        self.__refreshControls()        
         self.update()
+        
         return control
     
     @property
@@ -41,17 +44,14 @@ class new(PControl.new):
         self.__refreshControls()
         
     def __refreshControls(self):
-        prev = None
-        for k, c in self._controls.items():
+        for k, c in self.controls.items():
             c.name = k
-            c.zorder = prev.zorder+1 if prev != None else 0
             c.manager = self.manager
-            c.parent = self
             c.theme = self.theme
-            prev = c
         
     def draw(self):
         if self.visible:
+            PControl.new.draw(self)
             if self.drawFrame:
                 if self.theme == None:                    
                     h_draw_frame(self.bounds, self.backColor, self.border)    
@@ -60,8 +60,6 @@ class new(PControl.new):
                     t = self.theme["panel"]                    
                     h_draw_ninepatch(t["image"].id, t["image"].size[0], t["image"].size[1], self.bounds, t["padding"])
                     h_clip_begin(self.bounds, padding=t["padding"])
-            
-            PControl.new.draw(self)
             
             ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
             for v in ctrls:
@@ -73,6 +71,7 @@ class new(PControl.new):
     def __zorder_update(self):
         ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
         for c in ctrls:
+            c.parent = self
             if c.focused:
                 c.zorder = 99
             else:
@@ -81,10 +80,11 @@ class new(PControl.new):
     def update(self):
         if self.enabled and self.visible:
             self.updating = True
+            
             if self.updating:
                 self.__zorder_update()
                 
-                ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
+                ctrls = sorted(self.controls.values(), key=lambda x: x.layout_order)
                 for i in range(len(ctrls)):
                     v = ctrls[i]
                     v.foreColor = self.foreColor
@@ -96,5 +96,7 @@ class new(PControl.new):
                         self.layout.apply_layout(v, i, len(ctrls))
                     
                     v.update()
+                    
             self.updating = False
-        PControl.new.update(self)
+            
+            PControl.new.update(self)

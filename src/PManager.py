@@ -45,23 +45,18 @@ class new:
     
     def createContainer(self, name="newContainer", controls={}, bounds=[0, 0, 100, 100]):
         cnt = PContainer.new(bounds=bounds)
-        if isinstance(controls,  dict):
-            cnt.controls = controls
-        tmpc = self.controls
-        tmpc[u_gen_name(self.controls.keys(), name)] = cnt
-        self.controls = tmpc
-        self.update()
+        cnt.controls = controls
         
-        return cnt
+        return self.addControl(name, cnt)
     
     # Add a simple control
     def addControl(self, name, control, mouse_down=None):
-        tmpc = self.controls
         control.on_mouse_down = mouse_down
-        if name not in self.controls.keys():
-            tmpc[name] = control
+        
+        nname = u_gen_name(self.controls.keys(), name)
+        tmpc = self.controls.copy()
+        tmpc[nname] = control
         self.controls = tmpc
-        self.update()
         
         return control
     
@@ -117,13 +112,11 @@ class new:
         self.update()
     
     def __refreshControls(self):
-        prev = None
-        for k, c in self._controls.items():
+        for k, c in self.controls.items():
             c.name = k
-            c.zorder = prev.zorder+1 if prev != None else 0
             c.manager = self
             c.theme = self.theme
-            prev = c            
+        self.update()
     
     def draw(self):
         width = render.getWindowWidth()
@@ -149,16 +142,16 @@ class new:
         bgl.glEnable(bgl.GL_LINE_SMOOTH)
         bgl.glHint(bgl.GL_LINE_SMOOTH_HINT, bgl.GL_NICEST)
         
-        if len(self._controls.values()) <= 0: return
+        if len(self.controls.values()) <= 0: return
         
-        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
+        ctrls = sorted(self.controls.values(), key=lambda x: x.zorder)
         for c in ctrls:
-            if not self.updating:
-                c.draw()
+            c.draw()
     
     def __zorder_update(self):
-        ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
+        ctrls = sorted(self.controls.values(), key=lambda x: x.layout_order)
         for c in ctrls:
+            c.parent = None
             if c.focused:
                 c.zorder = 99
             else:

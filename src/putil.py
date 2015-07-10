@@ -85,7 +85,7 @@ def u_gen_name(availableNames, namestring):
         if cnt == 0: cnt = ""
     else:
         cnt = ""
-    return namestring + cnt
+    return namestring + str(cnt)
 
 # Fire an event if it's possible
 def fire_if_possible(event, *args):
