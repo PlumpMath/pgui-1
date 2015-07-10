@@ -22,6 +22,8 @@ class new(PControl.new):
         self.khover = False
         self.ksize = 0
         
+        self._values = {}
+        
     def onMouseClick(self, data):
         if data["button"] == events.LEFTMOUSE:
             self.drag = True
@@ -30,27 +32,43 @@ class new(PControl.new):
     def onMouseRelease(self, mouse_data):
         self.drag = False
     
+    def __snap_val(self, val):
+        vals = 0
+        for v, pos in self._values:
+            if val == v:
+                vals = pos
+            else:
+                vals = val
+        return vals
+    
     def onMouseMove(self, data):
         if self.drag:
-            kx = ((self.knob_bounds[0]+self.knob_bounds[2]/2)-self.bounds[0])
-            dx = abs(data["x"]-kx)
-            if data["x"] > kx:
-                self.value += dx
-            elif data["x"] < kx:
-                self.value -= dx
+            kx, ky = self.worldPos
+            for v, pos in self._values.items():
+                px = self.track[0]+pos
+                b = [self.track[0]+pos, self.knob_bounds[1], self.track[2]/len(self._values), self.bounds[3]]
+                if haspoint(b, kx, ky):
+                    self.value = v
+                    break
 
     def update(self):
         if not self.enabled: return
         
         ty = self.bounds[3]/2-2
-        self.ksize = (self.bounds[3]-5)/2
+        self.ksize = self.knob_bounds[2]
         self.track = [self.bounds[0]+self.ksize, self.bounds[1]+ty, self.bounds[2]-self.ksize*2, 4]
         
-        vx = (self.bounds[0]-self.track[0])+((self.min+self.value)/self.max) * self.track[2]
-        vy = self.ksize/2
+        self._values = {}
+        for i in range(self.min, self.max+1):
+            self._values[i] = ((self.min+i)/self.max) * self.track[2]
+        
+        vy = (self.ksize/2)-1
+        ky = self.knob_bounds[3]/2
+        vx = ((self.min+self.value)/self.max) * self.track[2]
+        vx -= vy
         
         self.knob_bounds[0] = self.track[0]+vx
-        self.knob_bounds[1] = self.bounds[1]+vy-2
+        self.knob_bounds[1] = (self.bounds[1]+self.bounds[3]/2)-ky
         
         PControl.new.update(self)
     
@@ -61,7 +79,10 @@ class new(PControl.new):
         
         if self.theme == None:
             h_draw_frame(self.track, default["control"], 2)        
-            h_draw_frame(self.knob_bounds, default["control"], 1)  
+            h_draw_frame(self.knob_bounds, default["control"], 1)
+            
+            #for v, pos in self._values.items():
+            #     h_draw_quad_wire([self.track[0]+pos, self.knob_bounds[1], self.track[2]/len(self._values), self.bounds[3]])
         else:
             pnl = self.theme["panel"]
             kn = self.theme["track_normal"]
@@ -70,7 +91,7 @@ class new(PControl.new):
             knb = kn
             
             if not self.khover and not self.clicked:
-                knb = kn               
+                knb = kn
             elif self.khover and not self.clicked:
                 knb = kh
             elif self.khover and self.clicked:

@@ -20,8 +20,6 @@ class new(PControl.new):
     
     # Add a simple control
     def addControl(self, name, control, mouse_down=None):
-        print(self.controls)
-        
         control.on_mouse_down = mouse_down
         
         nname = u_gen_name(self.controls.keys(), name)
