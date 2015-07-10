@@ -109,17 +109,22 @@ class new:
     @controls.setter
     def controls(self, ctrl):
         self._controls = ctrl
-        for k, c in self._controls.items():
-            c.name = k
-            c.manager = self
-            c.theme = self.theme
-            c.foreColor = self.globalForeColor
+        self.__refreshControls()
             
         sce = logic.getCurrentScene()
         sce.post_draw = [self.draw]
         
         self.update()
-        
+    
+    def __refreshControls(self):
+        prev = None
+        for k, c in self._controls.items():
+            c.name = k
+            c.zorder = prev.zorder+1 if prev != None else 0
+            c.manager = self
+            c.theme = self.theme
+            prev = c            
+    
     def draw(self):
         width = render.getWindowWidth()
         height = render.getWindowHeight()
@@ -148,11 +153,20 @@ class new:
         
         ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
         for c in ctrls:
-            c.draw()
-        
+            if not self.updating:
+                c.draw()
+    
+    def __zorder_update(self):
+        ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
+        for c in ctrls:
+            if c.focused:
+                c.zorder = 99
+            else:
+                c.zorder = -99
+    
     def update(self):
-        if len(self._controls.values()) <= 0: return
-                
+        if len(self.controls.values()) <= 0: return
+        
         width = render.getWindowWidth()
         height = render.getWindowHeight()
         
@@ -164,13 +178,11 @@ class new:
         
         self.updating = True
         
-        ctrls = sorted(self._controls.values(), key=lambda x: x.zorder, reverse=True)
-        for c in ctrls:
-            oldv = c.visible
-            if self.updating:
-                c.visible = oldv
+        if self.updating:
+            self.__zorder_update()
+            
+            ctrls = sorted(self._controls.values(), key=lambda x: x.zorder, reverse=True)
+            for c in ctrls:
                 c.update()
-            else:                
-                c.visible = False
         
         self.updating = False

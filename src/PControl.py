@@ -68,8 +68,8 @@ class new:
             import json
             return json.dumps(self, default=lambda x: x.__dict__, sort_keys=True, indent=4)
         else: # Add your serialization method here.
-            return False
-        return False
+            return None
+        return None
     
     def requestFocus(self):
         if logic.current_focus != None:
@@ -77,7 +77,6 @@ class new:
         logic.current_focus = self
         self.focused = True
         logic.handled = True
-        #print(logic.current_focus)
     
     def __str__(self):
         return self.name
@@ -119,6 +118,7 @@ class new:
     def update(self):
         # TODO: Check this code to see if there's something you can fix.
         #       Debug to find errors/bugs.
+        
         if not self.enabled: return
         
         global pressed_current
@@ -132,7 +132,7 @@ class new:
         
         # update child bounds
         if self.parent != None:
-            if self.parent.layout == None:
+            if self.parent.layout == None:                
                 self._bounds[0] = self._obounds[0] + self.parent.bounds[0]
                 self._bounds[1] = self._obounds[1] + self.parent.bounds[1]
         
@@ -191,7 +191,7 @@ class new:
                 self.enter = True
                 
             self.hovered = True
-            
+                        
             m_down    = k_mouse_action_down()
             m_click   = k_mouse_action_click()
             m_release = k_mouse_action_release()
@@ -215,6 +215,7 @@ class new:
                     }
                     self.onMouseClick(mouse_data)
                     fire_if_possible(self.on_mouse_click, self, mouse_data)
+                    
                     logic.handled = True
                     
                 if m_down["active"]:
@@ -227,6 +228,7 @@ class new:
                     }
                     self.onMouseHold(mouse_data)
                     fire_if_possible(self.on_mouse_hold, self, mouse_data)
+                    
                     logic.handled = True
                 
             if m_release["active"]:

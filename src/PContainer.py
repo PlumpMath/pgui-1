@@ -10,23 +10,25 @@ class new(PControl.new):
         self.zorder = -9999
         self.layout = None
         self.drawSelection = False
+        self.updating = False
     
     def createSubContainer(self, name="newSubContainer", controls={}, bounds=[0, 0, 100, 100]):
         cnt = new(bounds=bounds)
         if isinstance(controls,  dict):
             cnt.controls = controls
-        tmpc = self._controls
-        tmpc[u_gen_name(self._controls.keys(), name)] = cnt
-        self.controls = tmpc
+        self.controls[u_gen_name(self._controls.keys(), name)] = cnt
+        self.__refreshControls()
+        self.update()
         return cnt
     
     # Add a simple control
     def addControl(self, name, control, mouse_down=None):
-        tmpc = self.controls
         control.on_mouse_down = mouse_down
+        control.parent = self
         if name not in self.controls.keys():
-            tmpc[name] = control
-        self.controls = tmpc
+            self.controls[name] = control
+        self.__refreshControls()
+        self.update()
         return control
     
     @property
@@ -36,12 +38,18 @@ class new(PControl.new):
     @controls.setter
     def controls(self, ctrl):
         self._controls = ctrl
+        self.__refreshControls()
+        
+    def __refreshControls(self):
+        prev = None
         for k, c in self._controls.items():
             c.name = k
+            c.zorder = prev.zorder+1 if prev != None else 0
             c.manager = self.manager
             c.parent = self
             c.theme = self.theme
-    
+            prev = c
+        
     def draw(self):
         if self.visible:
             if self.drawFrame:
@@ -57,23 +65,36 @@ class new(PControl.new):
             
             ctrls = sorted(self._controls.values(), key=lambda x: x.zorder)
             for v in ctrls:
-                v.draw()
+                if not self.updating:
+                    v.draw()
                 
             h_clip_end()
-            
+    
+    def __zorder_update(self):
+        ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
+        for c in ctrls:
+            if c.focused:
+                c.zorder = 99
+            else:
+                c.zorder = -99
+    
     def update(self):
         if self.enabled and self.visible:
-            ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
-            for i in range(len(ctrls)):
-                v = ctrls[i]
-                v.foreColor = self.foreColor
-                if v.theme == None:
-                    v.theme = self.theme
-    
-                if self.layout != None:
-                    self.layout.bounds = self.bounds
-                    self.layout.apply_layout(v, i, len(ctrls))
-    
-                v.update()
-
+            self.updating = True
+            if self.updating:
+                self.__zorder_update()
+                
+                ctrls = sorted(self._controls.values(), key=lambda x: x.layout_order)
+                for i in range(len(ctrls)):
+                    v = ctrls[i]
+                    v.foreColor = self.foreColor
+                    if v.theme == None:
+                        v.theme = self.theme
+        
+                    if self.layout != None:
+                        self.layout.bounds = self.bounds
+                        self.layout.apply_layout(v, i, len(ctrls))
+                    
+                    v.update()
+            self.updating = False
         PControl.new.update(self)

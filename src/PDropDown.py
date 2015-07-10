@@ -52,15 +52,12 @@ class new(PButton.new):
     
     def onMouseClick(self, data):
         if data["button"] == events.LEFTMOUSE:
-            self._list.enabled = not self._list.enabled     
-            oz = self.zorder
+            self._list.enabled = not self._list.enabled
             if self._list.enabled:
                 max = 100
                 h = self._list.itemHeight * len(self._list.items) + 10
                 self.__nh = h if h < max else max
-                self.zorder = 99999                
-            else:                
-                self.zorder = oz
+            else:
                 self.__nh = 0
     
     def draw(self):
@@ -72,6 +69,10 @@ class new(PButton.new):
         self._list.draw()
     
     def update(self):
+        if not self.focused:
+            self.__nh = 0
+            self._list.enabled = False
+            
         self._list.bounds[0] = self.bounds[0]
         self._list.bounds[1] = self.bounds[1]+self.bounds[3]
         self._list.bounds[2] = self.bounds[2]
