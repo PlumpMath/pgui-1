@@ -52,6 +52,8 @@ class new:
         self.theme = None
         
         self.enter = False
+        
+        self.drawFrame = True
     @property
     def bounds(self):
         return self._bounds

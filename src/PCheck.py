@@ -1,4 +1,5 @@
 import pgui.src.PLabel as PLabel
+import pgui.src.PControl as PControl
 from .putil import *
 from .pthemes import *
 

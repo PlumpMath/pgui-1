@@ -9,7 +9,7 @@ class new:
         if not isinstance(rad, PRadio.new): return
         rad.group = self
         self.radios.append(rad)
-        if self.nothingChecked() and len(self.radios):
+        if self.nothingChecked() and len(self.radios)-1 == 0:
             self.radios[0].checked = True
             self.previous = self.radios[0]
     

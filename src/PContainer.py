@@ -45,7 +45,7 @@ class new(PControl.new):
     def draw(self):
         PControl.new.draw(self)
         
-        if self.drawBorder:
+        if self.drawFrame:
             if self.theme == None:
                 h_draw_frame(self.bounds, self.backColor, self.border)
             else:

@@ -21,6 +21,7 @@ class new(PLabel.new):
         
         self.shadow = False
         self.margin = 4
+        
         self.readOnly = False
         self.charSpacing = 1
         self.numbersOnly = False
