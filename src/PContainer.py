@@ -28,7 +28,7 @@ class new(PControl.new):
         self.controls = tmpc
         
         self.__refreshControls()        
-        self.update()
+        #self.update()
         
         return control
     

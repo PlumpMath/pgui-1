@@ -49,6 +49,7 @@ class new(PControl.new):
                 b = [self.track[0]+pos, self.knob_bounds[1], self.track[2]/len(self._values), self.bounds[3]]
                 if haspoint(b, kx, ky):
                     self.value = v
+                    # print(v)
                     break
 
     def update(self):
@@ -59,12 +60,20 @@ class new(PControl.new):
         self.track = [self.bounds[0]+self.ksize, self.bounds[1]+ty, self.bounds[2]-self.ksize*2, 4]
         
         self._values = {}
-        for i in range(self.min, self.max+1):
-            self._values[i] = ((self.min+i)/self.max) * self.track[2]
+        range_ = self.max-self.min
+        emin = self.min-range_ if abs(self.min) > 0 else self.min
+        emax = self.max-range_ if abs(self.min) > 0 else self.max
+        
+        for i in range(range_+1):            
+            self._values[i+self.min] = ((i+emin)/emax) * self.track[2]
+        
+        # print(self._values)
         
         vy = (self.ksize/2)-1
         ky = self.knob_bounds[3]/2
-        vx = ((self.min+self.value)/self.max) * self.track[2]
+        
+        val_norm = self.value-self.min
+        vx = ((val_norm+emin)/emax) * self.track[2]
         vx -= vy
         
         self.knob_bounds[0] = self.track[0]+vx
@@ -81,8 +90,8 @@ class new(PControl.new):
             h_draw_frame(self.track, default["control"], 2)        
             h_draw_frame(self.knob_bounds, default["control"], 1)
             
-            #for v, pos in self._values.items():
-            #     h_draw_quad_wire([self.track[0]+pos, self.knob_bounds[1], self.track[2]/len(self._values), self.bounds[3]])
+           # for v, pos in self._values.items():
+           #      h_draw_quad_wire([self.track[0]+pos, self.knob_bounds[1], self.track[2]/len(self._values), self.bounds[3]])
         else:
             pnl = self.theme["panel"]
             kn = self.theme["track_normal"]
