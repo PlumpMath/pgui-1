@@ -86,6 +86,7 @@ class new:
         self.mouse = {"x":0, "y":0}
         
         self.window = GameWindow()  
+        self.index = 0
         
     def createRadioGroup(self, radios):
         if not isinstance(radios, list): return
@@ -147,7 +148,7 @@ class new:
             
         control.bounds[0] = px
         control.bounds[1] = py
-        
+    
     def end(self):
         self.controls = {}
         sce = logic.getCurrentScene()
@@ -193,10 +194,7 @@ class new:
     def controls(self, ctrl):
         self._controls = ctrl
         self.__refreshControls()
-            
-        sce = logic.getCurrentScene()
-        sce.post_draw = [self.draw]
-        
+                
         self.update()
     
     def __refreshControls(self):
@@ -205,6 +203,10 @@ class new:
             c.manager = self
             c.theme = self.theme
         self.update()
+    
+    def bind(self):
+        sce = logic.getCurrentScene()
+        sce.post_draw.append(self.draw)
     
     def draw(self):
         width = render.getWindowWidth()

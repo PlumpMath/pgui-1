@@ -26,6 +26,9 @@ class new(PControl.new):
     def text(self, nt):
         self._text = nt
     
+    def text_size(self):
+        return blf.dimensions(self.fid, self.text)
+    
     def draw(self):
         if not self.visible: return
         width = render.getWindowWidth()

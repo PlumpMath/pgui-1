@@ -76,6 +76,12 @@ def k_mouse_action_release():
     
     return act
 
+def u_has_any_of_these(text, these):
+    return any(it in text for it in these)
+
+def u_split(text, patt, lim=-1):
+    return [x.strip() for x in text.rsplit(patt,lim)]
+
 def u_gen_name(availableNames, namestring):
     cnt = 0
     if isinstance(availableNames, list) or isinstance(availableNames, tuple):
