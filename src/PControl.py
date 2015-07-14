@@ -2,17 +2,13 @@ from .putil import *
 from .pthemes import *
 from bge import events
 
-PGUI_MOUSE_DOWN = 1
-PGUI_MOUSE_UP = 0
-PGUI_MOUSE_CLICK = 2
-
 class new:
     def __init__(self, bounds=[0, 0, 100, 100]):
         # Events
         self.on_mouse_hold = None
         self.on_mouse_release = None
         self.on_mouse_enter = None
-        self.on_mouse_leave = None        
+        self.on_mouse_leave = None
         self.on_mouse_move = None
         self.on_mouse_click = None
                 
@@ -34,26 +30,20 @@ class new:
         self.hovered = False
         self.clicked = False
         self.clickhold = False
+        self.enter = False
         
         self.focused = False
         self.manager = None
-        
+        self.drawFrame = True
         self.visible = True
         self.enabled = True
-        
+        self.theme = None
         self.zorder = 0
-        self.layout_order = 0
-        
-        self.parent = None
-        
+        self.layout_order = 0   
+        self.parent = None        
         self.relativePos = [0, 0]
         self.worldPos = [0, 0]
         
-        self.theme = None
-        
-        self.enter = False
-        
-        self.drawFrame = True
     @property
     def bounds(self):
         return self._bounds
