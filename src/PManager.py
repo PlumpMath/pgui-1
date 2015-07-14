@@ -208,7 +208,7 @@ class new:
     
     def bind(self):
         sce = logic.getCurrentScene()
-        sce.post_draw.append(self.draw)
+        sce.post_draw = [self.draw]
     
     def draw(self):
         width = render.getWindowWidth()
