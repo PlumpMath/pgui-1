@@ -144,5 +144,10 @@ class new(PControl.new):
         
         if val != self._value:
             fire_if_possible(self.on_value_change, self, val)
-                
-        self._value = val
+        
+        # Convert to int
+        tval = val
+        if isinstance(val, str) or isinstance(val, float):
+            tval = int(val)
+        
+        self._value = tval
