@@ -11,6 +11,8 @@ class new(PControl.new):
         self.layout = None
         self.drawSelection = False
         self.updating = False
+        
+        self._corder = 0
     
     def createSubContainer(self, name="newSubContainer", controls={}, bounds=[0, 0, 100, 100]):
         cnt = new(bounds=bounds)
@@ -21,6 +23,7 @@ class new(PControl.new):
     # Add a simple control
     def addControl(self, name, control, mouse_down=None):
         control.on_mouse_down = mouse_down
+        control.layout_order = self._corder
         
         nname = u_gen_name(self.controls.keys(), name)
         tmpc = self.controls.copy()
@@ -29,6 +32,7 @@ class new(PControl.new):
         
         self.__refreshControls()        
         #self.update()
+        self._corder+=1
         
         return control
     
@@ -83,6 +87,7 @@ class new(PControl.new):
                 self.__zorder_update()
                 
                 ctrls = sorted(self.controls.values(), key=lambda x: x.layout_order)
+                prev = None
                 for i in range(len(ctrls)):
                     v = ctrls[i]
                     v.foreColor = self.foreColor
@@ -91,9 +96,10 @@ class new(PControl.new):
         
                     if self.layout != None:
                         self.layout.bounds = self.bounds
-                        self.layout.apply_layout(v, i, len(ctrls))
+                        self.layout.apply_layout(v, prev, len(ctrls))
                     
                     v.update()
+                    prev = v
                     
             self.updating = False
             

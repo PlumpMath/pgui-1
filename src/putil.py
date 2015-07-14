@@ -544,6 +544,20 @@ def h_draw_line(x1,y1,x2,y2,col):
     bgl.glVertex2f(x2, y2)
     bgl.glEnd()
 
+def h_draw_3d_line_hor(x1,y1,x2,y2,color):
+    DRK = bright(color, 0.6)
+    LGT = bright(color, 1.2)
+    
+    h_draw_line(x1,y1,x2,y2,DRK)
+    h_draw_line(x1,y1+1,x2,y2+1,LGT)
+
+def h_draw_3d_line_ver(x1,y1,x2,y2,color):
+    DRK = bright(color, 0.6)
+    LGT = bright(color, 1.2)
+    
+    h_draw_line(x1,y1,x2,y2,DRK)
+    h_draw_line(x1+1,y1,x2+1,y2,LGT)
+
 def h_gen_texture():
     id = bgl.Buffer(bgl.GL_INT, 1)
     bgl.glGenTextures(1, id)

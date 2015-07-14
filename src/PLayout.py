@@ -6,5 +6,5 @@ class new:
 		self.padding = [4, 4, 4, 4]
 		self.fit = False
 	
-	def apply_layout(self, control, index, count):
+	def apply_layout(self, control, prev, count):
 		pass

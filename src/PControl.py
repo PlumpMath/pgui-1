@@ -249,3 +249,5 @@ class new:
                 if self.focused:
                     h_draw_selected(self.bounds)
         self.onDraw()
+        
+        #h_draw_quad_wire(self.bounds)

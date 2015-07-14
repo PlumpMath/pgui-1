@@ -17,7 +17,8 @@ class new(PControl.new):
         
         self.margin = 0
         self.shadow = shadow
-    
+        
+        self.drawSelection = False
     @property
     def text(self):
         return self._text
