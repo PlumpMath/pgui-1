@@ -1,23 +1,30 @@
+# This is the PGUI helper functions
+
 import bgl
 import blf
 from bge import render, logic, events, types, texture
 import math
 
+# Checks if a point (x, y) is inside a rectangle
 def haspoint(bounds, x, y):
     return (x >= bounds[0]            and
             x <= bounds[0]+bounds[2]  and
             y >= bounds[1]            and
             y <= bounds[1]+bounds[3])
 
+# Keyboard/Mouse events
 def m_clicked_act(btn, state=logic.KX_INPUT_JUST_ACTIVATED):
     return logic.mouse.events[btn] == state
 
+# Keyboard/Mouse events
 def m_clicked_down(btn, state=logic.KX_INPUT_ACTIVE):
     return m_clicked_act(btn, state)
 
+# Keyboard/Mouse events
 def m_release(btn, state=logic.KX_INPUT_JUST_RELEASED):
     return m_clicked_act(btn, state)
 
+# Keyboard/Mouse events
 def k_down(btn, state=logic.KX_INPUT_ACTIVE):
     return logic.keyboard.events[btn] == state
 def k_pressed(btn, state=logic.KX_INPUT_JUST_ACTIVATED):
@@ -25,6 +32,7 @@ def k_pressed(btn, state=logic.KX_INPUT_JUST_ACTIVATED):
 def k_released(btn, state=logic.KX_INPUT_JUST_RELEASED):
     return logic.keyboard.events[btn] == state
 
+# Keyboard/Mouse events
 def k_mouse_action_click():
     act = {"button": 0, "active": False}
     
@@ -42,6 +50,7 @@ def k_mouse_action_click():
     
     return act
 
+# Keyboard/Mouse events
 def k_mouse_action_down():
     act = {"button": 0, "active": False}
     
@@ -59,6 +68,7 @@ def k_mouse_action_down():
     
     return act
 
+# Keyboard/Mouse events
 def k_mouse_action_release():
     act = {"button": 0, "active": False}
     
@@ -76,12 +86,15 @@ def k_mouse_action_release():
     
     return act
 
+# Checks is a text has any of the items of these inside
 def u_has_any_of_these(text, these):
     return any(it in text for it in these)
-
+    
+ # Split and strip ;)
 def u_split(text, patt, lim=-1):
     return [x.strip() for x in text.rsplit(patt,lim)]
 
+# Generate an unique name based on available names and a name string
 def u_gen_name(availableNames, namestring):
     cnt = 0
     if isinstance(availableNames, list) or isinstance(availableNames, tuple):
@@ -101,6 +114,7 @@ def fire_if_possible(event, *args):
         return True
     return False
 
+# Clamp :)
 def clamp(val, min, max):
     if val > max:
         return max
@@ -108,31 +122,17 @@ def clamp(val, min, max):
         return min
     return val
 
-def xrange(s, e, st=1):
-    while s <= e:
-        yield s
-        s += st
-
+# Linear-Interpolation
 def lerp(v1, v2, t):
     return (1-t)*v1 + t*v2
 
+# Brighten/Darken color
 def bright(color, factor=1.0):
     if factor < 0.0: factor = 0.0    
     return [clamp(color[0] * factor, 0.0, 1.0),
             clamp(color[1] * factor, 0.0, 1.0),
             clamp(color[2] * factor, 0.0, 1.0),
             color[3]]
-
-def gen_coords_from_bounds(b, w, h):
-    w+=0.0001 # Just to make sure we're not dividing by 0 =)
-    h+=0.0001 #
-    
-    return [
-        (b[0]/w, b[1]/w),
-        ((b[0]+b[2])/w, b[1]/h),
-        (b[0]+b[2], b[1]+b[3]),
-        (b[0], b[1]+b[3])
-    ]
 
 def h_draw_texture(id, w, h, bounds, coords):    
     bgl.glEnable(bgl.GL_TEXTURE_2D)
@@ -144,8 +144,6 @@ def h_draw_texture(id, w, h, bounds, coords):
     
     B = bounds
     C = coords
-    
-    
     
     D = [
         (C[0][0]/w, C[0][1]/h),
@@ -279,6 +277,14 @@ def h_draw_ninepatch(id, w, h, bounds, padding, wire=False):
             (w-Q[2], 0)
         ]
         h_draw_texture(id, w, h, BBR, CBR)
+
+def h_draw_9patch_img(img, bounds, pad):
+    h_draw_ninepatch(img.id, img.size[0], img.size[1], bounds, pad)
+
+def h_draw_9patch_skin(skin, bounds):
+    if "image" not in skin: return
+    img = skin["image"]
+    h_draw_9patch_img(img, bounds, skin["padding"])
 
 def h_draw_arrow(x, y, size, up=False, color=(0, 0, 0, 1)):
     bgl.glColor4f(*color)
@@ -485,7 +491,7 @@ def h_draw_selected(bounds):
     bgl.glEnable(bgl.GL_LINE_STIPPLE)
     bgl.glLineStipple(2, 0xAAAAAA)
     bgl.glLineWidth(0.5)
-    bgl.glColor4f(*(0,0,0,1))
+    bgl.glColor4f(*(0,0,0,0.6))
     h_draw_quad_wire(selbounds)
     bgl.glDisable(bgl.GL_LINE_STIPPLE)
 
@@ -546,11 +552,6 @@ def h_gen_texture():
 def h_del_texture(tex):
     id = bgl.Buffer(bgl.GL_INT, 1, [tex])
     bgl.glDeleteTextures(1, id)
-
-def u_sort_post_draw(manager):
-    if manager is None: return
-    sce = logic.getCurrentScene()
-    sce.post_draw = [x for (x, y) in sorted(zip(sce.post_draw, manager._controls.values()), key=lambda x: x[1].zorder)]
 
 def get_all_keys():
     keys = {}
@@ -626,11 +627,3 @@ class Image(Texture2D):
         self.path = path
         
         img = None
-
-def h_draw_9patch_img(img, bounds, pad):
-    h_draw_ninepatch(img.id, img.size[0], img.size[1], bounds, pad)
-
-def h_draw_9patch_skin(skin, bounds):
-    if "image" not in skin: return
-    img = skin["image"]
-    h_draw_9patch_img(img, bounds, skin["padding"])
