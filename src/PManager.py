@@ -88,6 +88,8 @@ class new:
         self.window = GameWindow()  
         self.index = 0
         
+        self.pgui = None
+        
     def createRadioGroup(self, radios):
         if not isinstance(radios, list): return
         rg = PRadioGroup.new()

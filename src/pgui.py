@@ -19,6 +19,7 @@ class new:
 	
 	def eventLoop(self):
 		if self._active > -1 and self._active < len(self.managers):
+			self.managers[self._active].pgui = self
 			self.managers[self._active].update()
 	
 	@property
