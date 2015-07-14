@@ -10,7 +10,7 @@ from .pthemes import *
 from bge import events
 
 class new(PLabel.new):
-    def __init__(self, bounds=[0, 0, 100, 100], text="", fontfile="", font_size=14):
+    def __init__(self, bounds=[0, 0, 100, 20], text="", fontfile="", font_size=14):
         PLabel.new.__init__(self, bounds, text, fontfile, font_size, 0, vertical_align=0)
 
         self.caretx = 0

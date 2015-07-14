@@ -5,7 +5,7 @@ from .pthemes import *
 # This control is currently kinda buggy...
 # I would like some help to fix it, because I'm literally done with it :P
 class new(PControl.new):
-    def __init__(self, bounds=[0, 0, 100, 18]):
+    def __init__(self, bounds=[0, 0, 100, 20]):
         PControl.new.__init__(self, bounds)
         
         self._min = 0

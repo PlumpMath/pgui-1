@@ -6,7 +6,7 @@ from bge import render
 
 # needs fix
 class new(PControl.new):
-    def __init__(self, bounds=[0, 0, 100, 12]):
+    def __init__(self, bounds=[0, 0, 100, 20]):
         PControl.new.__init__(self, bounds)
     
         self._value = 0

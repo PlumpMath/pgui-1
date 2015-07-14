@@ -5,7 +5,7 @@ from .pthemes import *
 import blf
 
 class new(PControl.new):
-    def __init__(self, bounds=[0, 0, 1, 1], fontname=""):
+    def __init__(self, bounds=[0, 0, 100, 100], fontname=""):
         PControl.new.__init__(self, bounds)        
         self.items = ["Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 6", "Item 7"]        
         self._ibounds = {}

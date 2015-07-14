@@ -5,7 +5,7 @@ from .putil import *
 from .pthemes import *
 
 class new(PLabel.new):
-    def __init__(self, bounds=[0, 0, 100, 100], text="", fontfile="", image_file="", image_align=1, font_size=12, text_align=0):
+    def __init__(self, bounds=[0, 0, 100, 20], text="", fontfile="", image_file="", image_align=1, font_size=12, text_align=0):
         PLabel.new.__init__(self, bounds, text, fontfile, font_size, text_align)
         
         if image_file != "":

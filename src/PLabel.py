@@ -6,7 +6,7 @@ from .pthemes import *
 import pgui.src.PControl as PControl
 
 class new(PControl.new):
-    def __init__(self, bounds=[0, 0, 100, 100], text="", fontfile="", font_size=12, text_align=0, vertical_align=1, shadow=False):
+    def __init__(self, bounds=[0, 0, 100, 20], text="", fontfile="", font_size=12, text_align=0, vertical_align=1, shadow=False):
         PControl.new.__init__(self, bounds)
         self._text = text
         self.textAlign = text_align

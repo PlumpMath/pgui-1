@@ -5,7 +5,7 @@ from .putil import *
 from .pthemes import *
 
 class new(PButton.new):
-    def __init__(self, bounds=[0, 0, 100, 100], text="DropDown"):
+    def __init__(self, bounds=[0, 0, 100, 20], text="DropDown"):
         PButton.new.__init__(self, bounds=bounds, text=text)
         self.margin = 2        
         self.visible = True

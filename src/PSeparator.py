@@ -5,7 +5,7 @@ ORI_VERTICAL = 3
 ORI_HORIZONTAL = 6
 
 class new(PControl.new):
-	def __init__(self, bounds=[0, 0, 100, 10]):
+	def __init__(self, bounds=[0, 0, 100, 12]):
 		PControl.new.__init__(self, bounds=bounds)
 		
 		self.orientation = ORI_HORIZONTAL

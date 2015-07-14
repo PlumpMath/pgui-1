@@ -3,7 +3,7 @@ from .pthemes import *
 import pgui.src.PControl as PControl
 
 class new(PControl.new):
-    def __init__(self, bounds=[0, 0, 100, 25]):
+    def __init__(self, bounds=[0, 0, 100, 20]):
         PControl.new.__init__(self, bounds)
         self.on_value_change = None
         

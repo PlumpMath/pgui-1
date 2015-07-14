@@ -4,7 +4,7 @@ from .putil import *
 from .pthemes import *
 
 class new(PLabel.new):
-    def __init__(self, bounds=[0, 0, 100, 100], text="", fontfile="", font_size=12, text_align=0):
+    def __init__(self, bounds=[0, 0, 100, 20], text="", fontfile="", font_size=12, text_align=0):
         PLabel.new.__init__(self, bounds, text, fontfile, font_size, text_align)
         self._checked = True
         

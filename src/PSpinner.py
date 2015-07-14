@@ -6,7 +6,7 @@ from .pthemes import *
 import blf
 
 class new(PControl.new):
-    def __init__(self, bounds=[0, 0, 100, 100], fontfile="", font_size=12):
+    def __init__(self, bounds=[0, 0, 100, 20], fontfile="", font_size=12):
         PControl.new.__init__(self, bounds)
         
         self.fid = blf.load(fontfile) if fontfile != "" else 0

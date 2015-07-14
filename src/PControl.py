@@ -3,7 +3,7 @@ from .pthemes import *
 from bge import events
 
 class new:
-    def __init__(self, bounds=[0, 0, 100, 100]):
+    def __init__(self, bounds=[0, 0, 100, 20]):
         # Events
         self.on_mouse_hold = None
         self.on_mouse_release = None
