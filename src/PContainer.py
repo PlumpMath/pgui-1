@@ -57,7 +57,7 @@ class new(PControl.new):
             if self.drawFrame:
                 if self.theme == None:                    
                     h_draw_frame(self.bounds, self.backColor, self.border)    
-                    h_clip_begin(self.bounds, padding=[1, 1, 1, 1])                
+                    h_clip_begin(self.bounds, padding=[1, 1, 1, 1])
                 else:                    
                     t = self.theme["panel"]                    
                     h_draw_ninepatch(t["image"].id, t["image"].size[0], t["image"].size[1], self.bounds, t["padding"])
@@ -96,7 +96,7 @@ class new(PControl.new):
         
                     if self.layout != None:
                         self.layout.bounds = self.bounds
-                        self.layout.apply_layout(v, prev, len(ctrls))
+                        self.layout.apply_layout(v, len(ctrls))
                     
                     v.update()
                     prev = v

@@ -193,9 +193,11 @@ class new(PLabel.new):
         
         if self.theme == None:
             h_draw_quad_b(self.bounds, self.backColor, 2)
+            h_clip_begin(self.bounds, padding=[1, 1, 1, 1])
         else:
             t = self.theme["panel_down"]
-            h_draw_ninepatch(t["image"].id, t["image"].size[0], t["image"].size[1], self.bounds, t["padding"])
+            h_draw_9patch_skin(t, self.bounds)
+            h_clip_begin(self.bounds, padding=t["padding"])
         
         offx = 0
         
@@ -211,10 +213,10 @@ class new(PLabel.new):
             #h_draw_quad_wire(bnds)
             
             if not self.masked:
-                h_draw_text(self.fid, self.text[i], [self.bounds[0]+offx, self.bounds[1], charw, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=self.shadow)
+                h_draw_text(self.fid, self.text[i], [self.bounds[0]+offx, self.bounds[1], charw, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=self.shadow, clip=False)
             else:
                 charw, charh = blf.dimensions(self.fid, "*")
-                h_draw_text(self.fid, "*", [self.bounds[0]+offx, self.bounds[1], charw, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=self.shadow)
+                h_draw_text(self.fid, "*", [self.bounds[0]+offx, self.bounds[1], charw, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=self.shadow, clip=False)
             offx += charw + self.charSpacing
             
 #        h_draw_text(self.fid, "cx: %d, ln: %d, lt: %d" % (self.caretx, len(self.text), (self.caretx < len(self.text))), [10, 200, 100, 22], self.foreColor, margin=0, font_size=14, text_align=0, vertical_align=2)
@@ -228,6 +230,8 @@ class new(PLabel.new):
                 if i == self.caretx:
                     cx = self.bounds[0]+offx-3
                     if cx < self.bounds[0]+self.bounds[2]:
-                        h_draw_text(self.fid, "|", [cx, self.bounds[1]-2, 1, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=False)
+                        h_draw_text(self.fid, "|", [cx, self.bounds[1]-2, 1, self.bounds[3]], self.foreColor, margin=self.margin, font_size=self.fontSize, text_align=0, vertical_align=2, shadow=False, clip=False)
                     #break
                 offx += charw + self.charSpacing
+                
+        h_clip_end()

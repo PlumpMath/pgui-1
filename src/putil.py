@@ -335,7 +335,7 @@ def h_clip_begin(bounds, padding=[0, 0, 0, 0]):
 def h_clip_end():
     bgl.glDisable(bgl.GL_SCISSOR_TEST)
 
-def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, vertical_align=0, shadow=False):
+def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, vertical_align=0, shadow=False, clip=True):
     text = str(text)
     width = render.getWindowWidth()
     height = render.getWindowHeight()
@@ -343,7 +343,8 @@ def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, 
     #bgl.glColor4f(*(1, 0, 0, 1))
     #h_draw_quad_wire(bounds)
     
-    h_clip_begin(bounds)
+    if clip:
+        h_clip_begin(bounds)
     
     blf.size(fid, font_size, 72)
     if shadow:
@@ -388,7 +389,8 @@ def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, 
     bgl.glScalef(1.0, 1.0, 1.0)
     bgl.glPopMatrix()
     
-    h_clip_end()
+    if clip:
+        h_clip_end()
 
 # type: 1 = Raised, 2 = Sunken, 0 = None
 def h_draw_frame_d(bounds, color, type=1):
