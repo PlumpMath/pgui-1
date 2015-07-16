@@ -9,7 +9,7 @@ class new(PLayout.new):
 		index = control.layout_order
 		height = self._prevs
 		
-		control.bounds[0] = self.padding[0] + self.bounds[0]	
+		control.bounds[0] = self.padding[0] + self.bounds[0]
 		control.bounds[1] = (index * self.spacing) + height + self.padding[1] + self.bounds[1]
 		control.bounds[2] = self.bounds[2] - self.padding[2]*2
 		

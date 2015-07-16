@@ -77,18 +77,19 @@ class GameWindow:
     
 class new:
     def __init__(self):
-        self._controls = {}
+        self.controls = {}
         self._theme = None 
         self._gfc = (0, 0, 0, 1)
         logic.exit = ExitEvent(self) if not hasattr(logic, "exit") else logic.exit
         
-        self.updating = False
         self.mouse = {"x":0, "y":0}
         
         self.window = GameWindow()  
         self.index = 0
         
         self.pgui = None
+        
+        self.update()
         
     def createRadioGroup(self, radios):
         if not isinstance(radios, list): return
@@ -98,21 +99,23 @@ class new:
                 rg.addToGroup(self._controls[r])
         return rg
     
-    def createContainer(self, name="newContainer", controls={}, bounds=[0, 0, 100, 100]):
-        cnt = PContainer.new(bounds=bounds)
-        cnt.controls = controls
-        
-        return self.addControl(name, cnt)
+    def createContainer(self, name="newContainer", bounds=[0, 0, 100, 100]):
+        return self.addControl(name, PContainer.new(bounds=bounds))
     
     # Add a simple control
     def addControl(self, name, control, mouse_down=None):
         control.on_mouse_down = mouse_down
         
-        nname = u_gen_name(self.controls.keys(), name)
-        tmpc = self.controls.copy()
-        tmpc[nname] = control
-        self.controls = tmpc
+        keys = list(self.controls.keys())
+        nname = u_gen_name(keys, name)
         
+        control.name = nname
+        control.manager = self
+        control.theme = self.theme
+        
+        self.controls[nname] = control
+
+        self.update()
         return control
     
     def alignControl(self, control, where, padding=[0, 0, 0, 0]):
@@ -138,13 +141,13 @@ class new:
             px = (self.window.width-control.bounds[0]) - padding[2]
             py = self.window.height//2-control.bounds[3]//2
         elif where == AL_BOTTOM_LEFT:
-            py = (self.window.height-control.bounds[1]) - padding[3]
+            py = (self.window.height-control.bounds[3]) - padding[3]
         elif where == AL_BOTTOM:
             px = self.window.width//2-control.bounds[2]//2
-            py = (self.window.height-control.bounds[1]) - padding[3]
+            py = (self.window.height-control.bounds[3]) - padding[3]
         elif where == AL_BOTTOM_RIGHT:
-            px = (self.window.width-control.bounds[0]) - padding[2]
-            py = (self.window.height-control.bounds[1]) - padding[3]
+            px = (self.window.width-control.bounds[2]) - padding[2]
+            py = (self.window.height-control.bounds[3]) - padding[3]
         else:
             pass
             
@@ -188,24 +191,6 @@ class new:
         for k, c in self._controls.items():
             c.foreColor = val
     
-    @property
-    def controls(self):
-        return self._controls
-    
-    @controls.setter
-    def controls(self, ctrl):
-        self._controls = ctrl
-        self.__refreshControls()
-                
-        self.update()
-    
-    def __refreshControls(self):
-        for k, c in self.controls.items():
-            c.name = k
-            c.manager = self
-            c.theme = self.theme
-        self.update()
-    
     def bind(self):
         sce = logic.getCurrentScene()
         sce.post_draw = [self.draw]
@@ -241,9 +226,8 @@ class new:
             c.draw()
     
     def __zorder_update(self):
-        ctrls = sorted(self.controls.values(), key=lambda x: x.layout_order)
+        ctrls = list(self.controls.values())
         for c in ctrls:
-            c.parent = None
             if c.focused:
                 c.zorder = 99
             else:
@@ -263,13 +247,9 @@ class new:
         self.mouse["x"] = ex
         self.mouse["y"] = ey
         
-        self.updating = True
+        self.__zorder_update()
         
-        if self.updating:
-            self.__zorder_update()
-            
-            ctrls = sorted(self._controls.values(), key=lambda x: x.zorder, reverse=True)
-            for c in ctrls:
-                c.update()
+        ctrls = list(self.controls.values())
+        for c in ctrls:
+            c.update()
         
-        self.updating = False

@@ -111,6 +111,9 @@ class new:
         global pressed_current
         global pressed
         
+        #if self.parent is not None:
+        #    print(self.parent)
+        
         # check theme
         if self.theme != None:
             if "PGUI_SKIN" not in self.theme:
@@ -119,7 +122,7 @@ class new:
         
         # update child bounds
         if self.parent != None:
-            if self.parent.layout == None:                
+            if self.parent.layout is None:
                 self._bounds[0] = self._obounds[0] + self.parent.bounds[0]
                 self._bounds[1] = self._obounds[1] + self.parent.bounds[1]
         
