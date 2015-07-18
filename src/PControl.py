@@ -18,6 +18,8 @@ class new:
         
         self.on_draw = None
         
+        self.on_focus = None
+        
         self.name = "PControl" # default
         self.drawSelection = True
         self.fireClickOnEnter = True
@@ -67,6 +69,9 @@ class new:
         logic.current_focus = self
         self.focused = True
         logic.handled = True
+        
+        self.onFocus()
+        fire_if_possible(self.on_focus, self)
     
     def __str__(self):
         return self.name
@@ -100,6 +105,9 @@ class new:
         pass
     
     def onDraw(self):
+        pass
+        
+    def onFocus(self):
         pass
     
     def update(self):
