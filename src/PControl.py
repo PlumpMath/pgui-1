@@ -19,6 +19,7 @@ class new:
         self.on_draw = None
         
         self.on_focus = None
+        self.on_blur = None
         
         self.name = "PControl" # default
         self.drawSelection = True
@@ -66,6 +67,9 @@ class new:
     def requestFocus(self):
         if logic.current_focus != None:
             logic.current_focus.focused = False
+            logic.current_focus.onBlur()
+            fire_if_possible(logic.current_focus.on_blur, self)
+            
         logic.current_focus = self
         self.focused = True
         logic.handled = True
@@ -108,6 +112,9 @@ class new:
         pass
         
     def onFocus(self):
+        pass
+    
+    def onBlur(self):
         pass
     
     def update(self):
