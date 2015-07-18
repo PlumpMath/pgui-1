@@ -66,9 +66,10 @@ class new:
     
     def requestFocus(self):
         if logic.current_focus != None:
+            if logic.current_focus.focused:
+                logic.current_focus.onBlur()
+                fire_if_possible(logic.current_focus.on_blur, logic.current_focus)
             logic.current_focus.focused = False
-            logic.current_focus.onBlur()
-            fire_if_possible(logic.current_focus.on_blur, self)
             
         logic.current_focus = self
         self.focused = True
@@ -79,7 +80,10 @@ class new:
     
     def __str__(self):
         return self.name
-        
+    
+    def __repr__(self):
+        return "%s('%s')" % (type(self).__name__, self.name)
+    
     # New event system.
     def onMouseHold(self, mouse_data):
         pass
