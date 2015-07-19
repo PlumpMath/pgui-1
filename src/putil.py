@@ -5,6 +5,8 @@ import blf
 from bge import render, logic, events, types, texture
 import math
 
+import pgui.src.PGradient as PGradient
+
 # Checks if a point (x, y) is inside a rectangle
 def haspoint(bounds, x, y):
     return (x >= bounds[0]            and
@@ -279,6 +281,7 @@ def h_draw_ninepatch(id, w, h, bounds, padding, wire=False):
         h_draw_texture(id, w, h, BBR, CBR)
 
 def h_draw_9patch_img(img, bounds, pad):
+    if isinstance(img, str): return
     h_draw_ninepatch(img.id, img.size[0], img.size[1], bounds, pad)
 
 def h_draw_9patch_skin(skin, bounds):
@@ -392,50 +395,82 @@ def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, 
     if clip:
         h_clip_end()
 
-# type: 1 = Raised, 2 = Sunken, 0 = None
-def h_draw_frame_d(bounds, color, type=1):
-    if len(bounds) < 4: return
-
-    DRK = bright(color, 0.5)
-    LGT = bright(color, 4.0)
+def h_draw_gradient_rect(bounds, gradient, border_width=1, border_color=(0, 0, 0, 1), wire=False):
+    if len(gradient.colors) != len(gradient.offsets): return
     
-    bgl.glLineWidth(1)
-    bgl.glColor4f(*color)
+    bgl.glEnable(bgl.GL_BLEND)
+    bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+    
+    mode = bgl.GL_LINE_STRIP if wire else bgl.GL_TRIANGLE_STRIP
+    
+    bgl.glBegin(mode)
+    if gradient.orientation == 0: # HOR
+        for i in range(len(gradient.colors)):
+            bgl.glColor4f(*gradient.colors[i])
+            x = (bounds[2] * clamp(gradient.offsets[i], 0.0, 1.0)) + bounds[0]
+            bgl.glVertex2f(x, bounds[1])
+            bgl.glVertex2f(x, bounds[1]+bounds[3])
+    elif gradient.orientation == 1: # VER
+        for i in range(len(gradient.colors)):
+            bgl.glColor4f(*gradient.colors[i])
+            y = (bounds[3] * clamp(gradient.offsets[i], 0.0, 1.0)) + bounds[1]
+            bgl.glVertex2f(bounds[0], y)
+            bgl.glVertex2f(bounds[0]+bounds[2], y)
+    bgl.glEnd()
+    
+    if border_width > 0:
+        bgl.glLineWidth(border_width)
+        bgl.glColor4f(*border_color)
+        bgl.glBegin(bgl.GL_LINE_LOOP)
+        bgl.glVertex2f(bounds[0]          , bounds[1])
+        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
+        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1]+bounds[3])
+        bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
+        bgl.glEnd()
+    
+    bgl.glDisable(bgl.GL_BLEND)
+
+def h_draw_gradient_rect_fast(bounds, gradient, border_width=1, border_color=(0, 0, 0, 1), wire=False):
+    grad = PGradient.new()
+    grad.offsets = gradient["offsets"]
+    grad.colors = gradient["colors"]
+    grad.orientation = gradient["orientation"]
+    h_draw_gradient_rect(bounds, grad, border_width, border_color, wire)
+
+def h_draw_rect(bounds):
+    if len(bounds) < 4: return
     bgl.glBegin(bgl.GL_QUADS)
     bgl.glVertex2f(bounds[0]          , bounds[1])
     bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
     bgl.glVertex2f(bounds[0]+bounds[2], bounds[1]+bounds[3])
     bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
     bgl.glEnd()
+        
+# type: 1 = Raised, 2 = Sunken, 0 = None
+def h_draw_frame_d(bounds, color, type=1, bordercol=(0.5, 0.5, 0.5, 1.0)):
+    if len(bounds) < 4: return
+
+    DRK = bright(color, 0.5)
+    LGT = bright(color, 3.0)
     
     if type == 1:
-        bgl.glColor4f(*LGT)
-        bgl.glBegin(bgl.GL_LINE_STRIP)
-        bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
-        bgl.glVertex2f(bounds[0]          , bounds[1])
-        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
-        bgl.glEnd()
-        bgl.glColor4f(*DRK)
-        bgl.glBegin(bgl.GL_LINE_STRIP)
-        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
-        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1]+bounds[3])
-        bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
-        bgl.glEnd()
+        grad = {
+            "offsets": [0.0, 0.1, 0.8, 1.0],
+            "colors": [LGT, color, color, DRK],
+            "orientation": PGradient.GRAD_VERTICAL
+        }
+        h_draw_gradient_rect_fast(bounds, grad, border_color=bordercol)
     elif type == 2:
-        bgl.glColor4f(*DRK)
-        bgl.glBegin(bgl.GL_LINE_STRIP)
-        bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
-        bgl.glVertex2f(bounds[0]          , bounds[1])
-        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
-        bgl.glEnd()
-        bgl.glColor4f(*LGT)
-        bgl.glBegin(bgl.GL_LINE_STRIP)
-        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
-        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1]+bounds[3])
-        bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
-        bgl.glEnd()
-
-
+        grad = {
+            "offsets": [0.0, 0.1, 0.8, 1.0],
+            "colors": [DRK, color, color, LGT],
+            "orientation": PGradient.GRAD_VERTICAL
+        }
+        h_draw_gradient_rect_fast(bounds, grad, border_color=bordercol)
+    else:
+        bgl.glColor4f(*color)
+        h_draw_rect(bounds)
+        
 def h_draw_quad(bounds, color, type=0):
     h_draw_frame_d(bounds, color, type)
 
@@ -454,29 +489,15 @@ def h_draw_quad_wire(bounds):
     bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
     bgl.glEnd()
 
-def h_draw_frame(bounds, color, t):
-    bgl.glEnable(bgl.GL_BLEND)
-    bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
-    h_draw_quad(bounds, color, t)
-
-def h_draw_rect(bounds):
-    if len(bounds) < 4: return
-    bgl.glBegin(bgl.GL_QUADS)
-    bgl.glVertex2f(bounds[0]          , bounds[1])
-    bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
-    bgl.glVertex2f(bounds[0]+bounds[2], bounds[1]+bounds[3])
-    bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
-    bgl.glEnd()
-
 def h_draw_button(ncolor, bounds, hover, click):
     if not hover and not click:
-        h_draw_frame(bounds, ncolor, 1)
+        h_draw_frame_d(bounds, ncolor, 1)
     elif hover and not click:
-        h_draw_frame(bounds, ncolor, 1)
+        h_draw_frame_d(bounds, ncolor, 1)
     elif hover and click:
-        h_draw_frame(bounds, ncolor, 2)
+        h_draw_frame_d(bounds, ncolor, 2)
     else:
-        h_draw_frame(bounds, ncolor, 2)
+        h_draw_frame_d(bounds, ncolor, 2)
 
 def h_draw_tick(x, y, size, color):
     bgl.glColor4f(*bright(color, 0.2))
@@ -582,10 +603,14 @@ supported_keys = get_all_keys()
 # Based on Moguri's BGUI
 class Texture2D:
     def __init__(self, path, interpolation):
+        if not hasattr(logic, "texture_cache"):
+            logic.texture_cache = {}
+            
         self.id = h_gen_texture()
         self.size = [0, 0]
         self.path = None
         self._interpolation = None
+        self._cache = False
         
         self.bind()
         bgl.glTexEnvf(bgl.GL_TEXTURE_ENV, bgl.GL_TEXTURE_ENV_MODE, bgl.GL_MODULATE)
@@ -612,26 +637,27 @@ class Texture2D:
         bgl.glBindTexture(bgl.GL_TEXTURE_2D, self.id)
 
 class Image(Texture2D):
-    _cache = {}
-    def __init__(self, path, interp=bgl.GL_LINEAR, cache=True):
-        self._cache = cache
+    def __init__(self, path, interp=bgl.GL_NEAREST, cache=True):
         Texture2D.__init__(self, path, interp)
-        
+        self._cache = cache
+        self.valid = True
+                
     def reload(self, path):
         bgl.glEnable(bgl.GL_TEXTURE_2D)
         
         if path == self.path: return
-        if path in Image._cache:
-            img = Image._cache[path]
+        if path in logic.texture_cache:
+            img = logic.texture_cache[path]
         else:
             img = texture.ImageFFmpeg(path)
             img.scale = False
             if self._cache:
-                Image._cache[path] = img
+                logic.texture_cache[path] = img
         
         data = img.image
         if data == None:
             print("Could not load the image", img)
+            self.valid = False
             return
                 
         self.bind()

@@ -30,9 +30,12 @@ class ExitEvent:
         tcnt = 0
         if self.pmanager._theme != None:            
             for k, v in self.pmanager._theme.items():
-                if k != "PGUI_SKIN":
-                    h_del_texture(v["image"].id)
-                    tcnt += 1
+                try:
+                    if k != "PGUI_SKIN":
+                        h_del_texture(v["image"].id)
+                        tcnt += 1
+                except:
+                    pass
         #print("PGUI Exited. %d textures deleted." % tcnt)
 
 class GameWindow:
@@ -74,9 +77,13 @@ class GameWindow:
     @height.setter
     def height(self, v):
         render.setWindowSize(self._width, v)
-    
+
 class new:
     def __init__(self):
+        
+        if not hasattr(logic, "texture_cache"):
+            logic.texture_cache = {}
+
         self.controls = {}
         self._theme = None 
         self._gfc = (0, 0, 0, 1)
@@ -90,7 +97,7 @@ class new:
         self.pgui = None
         
         self.update()
-        
+    
     def createRadioGroup(self, radios):
         if not isinstance(radios, list): return
         rg = PRadioGroup.new()
@@ -164,7 +171,7 @@ class new:
         
     def saveTheme(self, path, theme):
         json.dump(theme, open(path, "w"))
-    
+
     @property
     def theme(self):
         return self._theme
@@ -172,14 +179,14 @@ class new:
     @theme.setter
     def theme(self, v):
         self._theme = v
-        if v != None:
+        if self._theme != None:
             for k, v in self._theme.items():
                 if k != "PGUI_SKIN":
                     path = v["image"]
                     v["image"] = Image(logic.expandPath(path))
-                    
-            for k, c in self._controls.items():
-                c.theme = v
+            
+            for k, c in self.controls.items():
+                c.theme = self._theme
     
     @property
     def globalForeColor(self):

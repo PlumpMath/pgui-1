@@ -31,8 +31,8 @@ class new(PControl.new):
         if self.drawFrame:
             gbounds = [self.bounds[0]+self.padding[0], self.bounds[1]+self.padding[1], self.bounds[2]-self.padding[2]*2, self.bounds[3]-self.padding[3]*2]
             if self.theme == None:
-                h_draw_frame(self.bounds, self.backColor, 1)
-                h_draw_frame(gbounds, bright(self.backColor, 0.9), 2)
+                h_draw_frame_d(self.bounds, self.backColor, 1)
+                h_draw_frame_d(gbounds, bright(self.backColor, 0.9), 2)
             else:
                 p = self.theme["panel"]
                 h_draw_9patch_skin(p, gbounds)

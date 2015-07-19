@@ -95,9 +95,9 @@ class new(PControl.new):
         
         if self.theme == None:
             if not self.drag:
-                h_draw_frame(self.knob_bounds, default["control"], 1)
+                h_draw_frame_d(self.knob_bounds, default["control"], 1)
             else:
-                h_draw_frame(self.knob_bounds, default["control"], 2)
+                h_draw_frame_d(self.knob_bounds, default["control"], 2)
         else:
             tn = self.theme["button_normal"]
             tc = self.theme["button_click"]

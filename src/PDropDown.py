@@ -76,7 +76,7 @@ class new(PButton.new):
         self._list.bounds[0] = self.bounds[0]
         self._list.bounds[1] = self.bounds[1]+self.bounds[3]
         self._list.bounds[2] = self.bounds[2]
-        self._list.bounds[3] = lerp(self._list.bounds[3], self.__nh, 0.5)
+        self._list.bounds[3] = self.__nh
         
         if self._list.bounds[3] > 2:
             self._list.visible = True

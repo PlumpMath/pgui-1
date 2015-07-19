@@ -9,7 +9,10 @@ class new:
 	def __init__(self):
 		self._active = -1
 		self.managers = []
-	
+		
+		if not hasattr(logic, "texture_cache"):
+			logic.texture_cache = {}
+			
 	def newManager(self):
 		pm = PManager.new()
 		pm.index = len(self.managers)+1

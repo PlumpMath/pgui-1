@@ -82,7 +82,7 @@ class new(PControl.new):
             if self.on_draw_item == None:                
                 if self.selectedIndex == i:
                     if self.theme == None:
-                        h_draw_frame(bnds, default["button_hover"], 0)
+                        h_draw_frame_d(bnds, default["button_hover"], 0)
                     else:
                         tm = self.theme["select"]
                         h_draw_9patch_skin(tm, bnds)

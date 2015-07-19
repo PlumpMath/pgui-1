@@ -67,7 +67,8 @@ class new(PLabel.new):
                     t = cc
                 else:
                     t = cuc
-            h_draw_ninepatch(t["image"].id, t["image"].size[0], t["image"].size[1], tbnds, t["padding"])
+            
+            h_draw_9patch_skin(t, tbnds)
 
         self.margin = 20
         PLabel.new.draw(self)

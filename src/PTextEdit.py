@@ -16,7 +16,7 @@ class new(PLabel.new):
         self.caretx = 0
         self.cx = 0
         
-        self.backColor = default["text_background"]
+        self.backColor = (1,1,1,1)
         self.foreColor = default["text_color"]
         
         self.shadow = False

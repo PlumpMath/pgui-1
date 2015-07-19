@@ -41,11 +41,11 @@ class new(PControl.new):
             
             if self.drawFrame:
                 if self.theme == None:                    
-                    h_draw_frame(self.bounds, self.backColor, self.border)    
+                    h_draw_frame_d(self.bounds, self.backColor, self.border)    
                     h_clip_begin(self.bounds, padding=[1, 1, 1, 1])
                 else:                    
-                    t = self.theme["panel"]                    
-                    h_draw_ninepatch(t["image"].id, t["image"].size[0], t["image"].size[1], self.bounds, t["padding"])
+                    t = self.theme["panel"]
+                    h_draw_9patch_skin(t, self.bounds)
                     h_clip_begin(self.bounds, padding=t["padding"])
             
             ctrls = sorted(list(self.controls.values()), key=lambda x: x.zorder)
@@ -68,7 +68,6 @@ class new(PControl.new):
             
             ctrls = sorted(list(self.controls.values()), key=lambda x: x.layout_order)
             for c in ctrls:
-                
                 c.foreColor = self.foreColor
                 if c.theme == None:
                     c.theme = self.theme

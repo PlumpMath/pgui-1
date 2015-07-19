@@ -87,8 +87,8 @@ class new(PControl.new):
         tbnds = self.knob_bounds
         
         if self.theme == None:
-            h_draw_frame(self.track, default["control"], 2)        
-            h_draw_frame(self.knob_bounds, default["control"], 1)
+            h_draw_frame_d(self.track, default["control"], 2)        
+            h_draw_frame_d(self.knob_bounds, default["control"], 1)
             
            # for v, pos in self._values.items():
            #      h_draw_quad_wire([self.track[0]+pos, self.knob_bounds[1], self.track[2]/len(self._values), self.bounds[3]])
