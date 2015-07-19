@@ -17,7 +17,7 @@ class new:
         self.on_key_press = None
         
         self.on_draw = None
-        
+                
         self.on_focus = None
         self.on_blur = None
         
@@ -265,9 +265,9 @@ class new:
     
     def draw(self):
         if not self.visible: return
-        
-        if self.drawSelection:
-            if not fire_if_possible(self.on_draw, self):
+                
+        if not fire_if_possible(self.on_draw, self):
+            if self.drawSelection:
                 if self.focused:
                     h_draw_selected(self.bounds)
         self.onDraw()
