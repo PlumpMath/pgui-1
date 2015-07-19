@@ -13,17 +13,20 @@ class new(PControl.new):
         self.fontSize = font_size
         
         self._value = 0
-        self._max = 100
-        self._min = 0
+        self._max = 100.0
+        self._min = 0.0
+        
+        self.decimalPlaces = 0
+        self.increment = 1
         
         self.addb = PButton.new(text="", fontfile=fontfile, text_align=1)
         self.decb = PButton.new(text="", fontfile=fontfile, text_align=1)
         
         _this = self
         def addf(s, d):
-            _this.value += 1
+            _this.value += self.increment
         def decf(s, d):
-            _this.value -= 1
+            _this.value -= self.increment
         self.addb.on_mouse_click = addf
         self.decb.on_mouse_click = decf
     
@@ -38,7 +41,7 @@ class new(PControl.new):
     @max.setter
     def max(self, val):
         if val <= self._min:
-            val = self._min+1
+            val = self._min+self.increment
         self._max = val
     
     @property
@@ -48,12 +51,12 @@ class new(PControl.new):
     @min.setter
     def min(self, val):
         if val >= self._max:
-            val = self._max-1
+            val = self._max-self.increment
         self._min = val
             
     @property
     def value(self):
-        return self._value
+        return round(self._value, self.decimalPlaces)
     
     @value.setter
     def value(self, val):
@@ -61,10 +64,10 @@ class new(PControl.new):
             val = self._min
         if val > self._max:
             val = self._max
-            
+        
         if val != self._value:
-            fire_if_possible(self.on_value_change, self, val)
-                
+            fire_if_possible(self.on_value_change, self, round(val, self.decimalPlaces))
+        
         self._value = val
     
     def update(self):
@@ -89,8 +92,9 @@ class new(PControl.new):
         else:
             p = self.theme["panel_down"]
             h_draw_9patch_skin(p, sp_bounds)
-
-        h_draw_text(self.fid, "%d" % self.value, sp_bounds, self.foreColor, margin=0, font_size=self.fontSize, text_align=1, vertical_align=1, shadow=False)
+        
+        val = str(self.value)
+        h_draw_text(self.fid, val, sp_bounds, self.foreColor, margin=0, font_size=self.fontSize, text_align=1, vertical_align=1, shadow=False)
         
         self.decb.draw()
         self.addb.draw()
