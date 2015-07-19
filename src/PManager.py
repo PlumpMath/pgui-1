@@ -213,18 +213,19 @@ class new:
         bgl.glMatrixMode(bgl.GL_MODELVIEW)
         bgl.glLoadIdentity()
         
-        # 2D Shading (Flat)
+        # 2D Shading
         bgl.glDisable(bgl.GL_CULL_FACE)
         bgl.glDisable(bgl.GL_LIGHTING)
         bgl.glDisable(bgl.GL_DEPTH_TEST)
-        
-        # 2D Blending (Alpha)
-        bgl.glEnable(bgl.GL_BLEND)
-        bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+        bgl.glShadeModel(bgl.GL_SMOOTH)
         
         # Line antialias
         bgl.glEnable(bgl.GL_LINE_SMOOTH)
         bgl.glHint(bgl.GL_LINE_SMOOTH_HINT, bgl.GL_NICEST)
+        
+        # 2D Blending (Alpha)
+        bgl.glEnable(bgl.GL_BLEND)
+        bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
         
         if len(self.controls.values()) <= 0: return
         
@@ -256,7 +257,7 @@ class new:
         
         self.__zorder_update()
         
-        ctrls = list(self.controls.values())
+        ctrls = sorted(list(self.controls.values()), key=lambda x: x.zorder, reverse=True)
         for c in ctrls:
             c.update()
         

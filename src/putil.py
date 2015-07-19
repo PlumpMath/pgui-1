@@ -338,6 +338,144 @@ def h_clip_begin(bounds, padding=[0, 0, 0, 0]):
 def h_clip_end():
     bgl.glDisable(bgl.GL_SCISSOR_TEST)
 
+def h_draw_arc_wire(cx, cy, r, start_angle, arc_angle, color=(1,1,1,1), width=1, segs=12):
+    bgl.glEnable(bgl.GL_BLEND)
+    bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+
+    start_angle = math.radians(start_angle)
+    arc_angle = math.radians(arc_angle)
+    
+    theta = arc_angle / (segs-1)
+    
+    tangencial_factor = math.tan(theta)
+    radial_factor = math.cos(theta)
+    
+    x = r * math.cos(start_angle)
+    y = r * math.sin(start_angle)
+    
+    bgl.glColor4f(*color)
+    bgl.glLineWidth(width)
+    bgl.glBegin(bgl.GL_LINE_STRIP)
+    
+    for i in range(segs):
+        bgl.glVertex2f(x + cx, y + cy)
+        
+        tx = -y
+        ty = x
+        
+        x += tx * tangencial_factor
+        y += ty * tangencial_factor
+        x *= radial_factor
+        y *= radial_factor
+
+    bgl.glEnd()
+    
+    bgl.glDisable(bgl.GL_BLEND)
+
+def h_draw_arc(cx, cy, r, start_angle, arc_angle, color=(1,1,1,1), segs=12):
+    bgl.glEnable(bgl.GL_BLEND)
+    bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+    
+    start_angle = math.radians(start_angle)
+    arc_angle = math.radians(arc_angle)
+    
+    theta = arc_angle / (segs-1)
+    
+    tangencial_factor = math.tan(theta)
+    radial_factor = math.cos(theta)
+    
+    x = r * math.cos(start_angle)
+    y = r * math.sin(start_angle)
+    
+    bgl.glColor4f(*color)
+    bgl.glBegin(bgl.GL_POLYGON)
+    
+    bgl.glVertex2f(cx, cy)
+    for i in range(segs):
+        bgl.glVertex2f(x + cx, y + cy)
+        
+        tx = -y
+        ty = x
+        
+        x += tx * tangencial_factor
+        y += ty * tangencial_factor
+        x *= radial_factor
+        y *= radial_factor
+
+    bgl.glEnd()
+    
+    bgl.glDisable(bgl.GL_BLEND)
+
+def h_draw_line(x1,y1,x2,y2,col):
+    bgl.glColor4f(*col)
+    bgl.glBegin(bgl.GL_LINES)
+    bgl.glVertex2f(x1, y1)
+    bgl.glVertex2f(x2, y2)
+    bgl.glEnd()
+
+def h_draw_rect(bounds, wire=False):
+    if len(bounds) < 4: return
+    bgl.glBegin(bgl.GL_QUADS if not wire else bgl.GL_LINE_LOOP)
+    bgl.glVertex2f(bounds[0]          , bounds[1])
+    bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
+    bgl.glVertex2f(bounds[0]+bounds[2], bounds[1]+bounds[3])
+    bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
+    bgl.glEnd()
+
+def h_round_rect(bounds, radius, color=(1,1,1,1)):
+    if radius > 0:
+        h_draw_arc(bounds[0]+radius, bounds[1]+radius, radius, 180, 90, color=color)
+        h_draw_arc((bounds[0]+bounds[2])-radius, bounds[1]+radius, radius, 270, 90, color=color)
+        h_draw_arc((bounds[0]+bounds[2])-radius, (bounds[1]+bounds[3])-radius, radius, 0, 90, color=color)
+        h_draw_arc(bounds[0]+radius, (bounds[1]+bounds[3])-radius, radius, 90, 90, color=color)
+    
+    b1 = [bounds[0]+radius, bounds[1], bounds[2]-radius*2, bounds[3]]
+    b2 = [bounds[0], bounds[1]+radius, radius, bounds[3]-radius*2]
+    b3 = [(bounds[0]+bounds[2])-radius, bounds[1]+radius, radius, bounds[3]-radius*2]
+    
+    bgl.glColor4f(*color)
+    h_draw_rect(b1)
+    h_draw_rect(b2)
+    h_draw_rect(b3)
+    
+def h_round_rect_wire(bounds, radius, color=(1, 1, 1, 1), width=1):
+    if radius > 0:
+        h_draw_arc_wire(bounds[0]+radius, bounds[1]+radius, radius, 180, 90, color=color, width=width)
+        h_draw_arc_wire((bounds[0]+bounds[2])-radius, bounds[1]+radius, radius, 270, 90, color=color, width=width)
+        h_draw_arc_wire((bounds[0]+bounds[2])-radius, (bounds[1]+bounds[3])-radius, radius, 0, 90, color=color, width=width)
+        h_draw_arc_wire(bounds[0]+radius, (bounds[1]+bounds[3])-radius, radius, 90, 90, color=color, width=width)
+    
+    b1 = [bounds[0]+radius, bounds[1], bounds[2]-radius*2, bounds[3]]
+    b2 = [bounds[0], bounds[1]+radius, radius, bounds[3]-radius*2]
+    b3 = [(bounds[0]+bounds[2])-radius, bounds[1]+radius, radius, bounds[3]-radius*2]
+        
+    h_draw_line(bounds[0]+radius, bounds[1], (bounds[0]+bounds[2])-radius, bounds[1], color)
+    h_draw_line(bounds[0]+radius, bounds[1]+bounds[3], (bounds[0]+bounds[2])-radius, bounds[1]+bounds[3], color)
+    h_draw_line(bounds[0], bounds[1]+radius, bounds[0], (bounds[1]+bounds[3])-radius, color)
+    h_draw_line(bounds[0]+bounds[2], bounds[1]+radius, bounds[0]+bounds[2], (bounds[1]+bounds[3])-radius, color)
+    
+def h_mask_begin(bounds, radius=0):
+    bgl.glEnable(bgl.GL_STENCIL_TEST)
+    bgl.glColorMask(False, False, False, False)
+    bgl.glDepthMask(False)
+    bgl.glStencilFunc(bgl.GL_NEVER, 1, 0xFF)
+    bgl.glStencilOp(bgl.GL_REPLACE, bgl.GL_KEEP, bgl.GL_KEEP)
+    
+    bgl.glStencilMask(0xFF)
+    bgl.glClear(bgl.GL_STENCIL_BUFFER_BIT)
+    
+    h_round_rect(bounds, radius)
+    
+    bgl.glColorMask(True, True, True, True)
+    bgl.glDepthMask(True)
+    bgl.glStencilMask(0x00);
+    bgl.glStencilFunc(bgl.GL_EQUAL, 0, 0xFF)
+    
+    bgl.glStencilFunc(bgl.GL_EQUAL, 1, 0xFF)
+
+def h_mask_end():
+    bgl.glDisable(bgl.GL_STENCIL_TEST)
+
 def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, vertical_align=0, shadow=False, clip=True):
     text = str(text)
     width = render.getWindowWidth()
@@ -395,11 +533,13 @@ def h_draw_text(fid, text, bounds, color, margin=0, font_size=16, text_align=0, 
     if clip:
         h_clip_end()
 
-def h_draw_gradient_rect(bounds, gradient, border_width=1, border_color=(0, 0, 0, 1), wire=False):
+def h_draw_gradient_rect(bounds, gradient, border_width=1, border_radius=0, border_color=(0, 0, 0, 1), wire=False):
     if len(gradient.colors) != len(gradient.offsets): return
     
     bgl.glEnable(bgl.GL_BLEND)
     bgl.glBlendFunc(bgl.GL_SRC_ALPHA, bgl.GL_ONE_MINUS_SRC_ALPHA)
+    
+    h_mask_begin(bounds, border_radius)
     
     mode = bgl.GL_LINE_STRIP if wire else bgl.GL_TRIANGLE_STRIP
     
@@ -417,37 +557,24 @@ def h_draw_gradient_rect(bounds, gradient, border_width=1, border_color=(0, 0, 0
             bgl.glVertex2f(bounds[0], y)
             bgl.glVertex2f(bounds[0]+bounds[2], y)
     bgl.glEnd()
+        
+    h_mask_end()
     
     if border_width > 0:
-        bgl.glLineWidth(border_width)
-        bgl.glColor4f(*border_color)
-        bgl.glBegin(bgl.GL_LINE_LOOP)
-        bgl.glVertex2f(bounds[0]          , bounds[1])
-        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
-        bgl.glVertex2f(bounds[0]+bounds[2], bounds[1]+bounds[3])
-        bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
-        bgl.glEnd()
+        h_round_rect_wire(bounds, border_radius, color=border_color, width=border_width)
     
     bgl.glDisable(bgl.GL_BLEND)
+    
 
-def h_draw_gradient_rect_fast(bounds, gradient, border_width=1, border_color=(0, 0, 0, 1), wire=False):
+def h_draw_gradient_rect_fast(bounds, gradient, border_width=0.5, border_radius=0, border_color=(0, 0, 0, 1), wire=False):
     grad = PGradient.new()
     grad.offsets = gradient["offsets"]
     grad.colors = gradient["colors"]
     grad.orientation = gradient["orientation"]
-    h_draw_gradient_rect(bounds, grad, border_width, border_color, wire)
+    h_draw_gradient_rect(bounds, grad, border_width, border_radius, border_color, wire)
 
-def h_draw_rect(bounds):
-    if len(bounds) < 4: return
-    bgl.glBegin(bgl.GL_QUADS)
-    bgl.glVertex2f(bounds[0]          , bounds[1])
-    bgl.glVertex2f(bounds[0]+bounds[2], bounds[1])
-    bgl.glVertex2f(bounds[0]+bounds[2], bounds[1]+bounds[3])
-    bgl.glVertex2f(bounds[0]          , bounds[1]+bounds[3])
-    bgl.glEnd()
-        
 # type: 1 = Raised, 2 = Sunken, 0 = None
-def h_draw_frame_d(bounds, color, type=1, bordercol=(0.5, 0.5, 0.5, 1.0)):
+def h_draw_frame_d(bounds, color, type=1, bordercol=(0.5, 0.5, 0.5, 1.0), radius=2):
     if len(bounds) < 4: return
 
     DRK = bright(color, 0.5)
@@ -459,14 +586,14 @@ def h_draw_frame_d(bounds, color, type=1, bordercol=(0.5, 0.5, 0.5, 1.0)):
             "colors": [LGT, color, color, DRK],
             "orientation": PGradient.GRAD_VERTICAL
         }
-        h_draw_gradient_rect_fast(bounds, grad, border_color=bordercol)
+        h_draw_gradient_rect_fast(bounds, grad, border_color=bordercol, border_radius=radius)
     elif type == 2:
         grad = {
             "offsets": [0.0, 0.1, 0.8, 1.0],
             "colors": [DRK, color, color, LGT],
             "orientation": PGradient.GRAD_VERTICAL
         }
-        h_draw_gradient_rect_fast(bounds, grad, border_color=bordercol)
+        h_draw_gradient_rect_fast(bounds, grad, border_color=bordercol, border_radius=radius)
     else:
         bgl.glColor4f(*color)
         h_draw_rect(bounds)
@@ -559,13 +686,6 @@ def h_draw_circle_d(x, y, r, color, type=1):
         h_draw_circle_wire(x, y, r)
         bgl.glColor4f(*DRK)
         h_draw_circle_wire(x-0.5, y-0.5, r)
-
-def h_draw_line(x1,y1,x2,y2,col):
-    bgl.glColor4f(*col)
-    bgl.glBegin(bgl.GL_LINES)
-    bgl.glVertex2f(x1, y1)
-    bgl.glVertex2f(x2, y2)
-    bgl.glEnd()
 
 def h_draw_3d_line_hor(x1,y1,x2,y2,color):
     DRK = bright(color, 0.6)

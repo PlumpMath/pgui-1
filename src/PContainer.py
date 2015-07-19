@@ -66,7 +66,8 @@ class new(PControl.new):
         if self.enabled and self.visible:
             self.__zorder_update()
             
-            ctrls = sorted(list(self.controls.values()), key=lambda x: x.layout_order)
+            sort_key = (lambda x: x.layout_order) if self.layout is not None else (lambda x: x.zorder)
+            ctrls = sorted(list(self.controls.values()), key=sort_key)
             for c in ctrls:
                 c.foreColor = self.foreColor
                 if c.theme == None:
