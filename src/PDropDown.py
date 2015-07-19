@@ -1,12 +1,12 @@
 import pgui.src.PControl as PControl
 import pgui.src.PList as PList
-import pgui.src.PButton as PButton
+import pgui.src.PLabel as PLabel
 from .putil import *
 from .pthemes import *
 
-class new(PButton.new):
+class new(PLabel.new):
     def __init__(self, bounds=[0, 0, 100, 20], text="DropDown"):
-        PButton.new.__init__(self, bounds=bounds, text=text)
+        PLabel.new.__init__(self, bounds=bounds, text=text)
         self.margin = 2        
         self.visible = True
         
@@ -21,19 +21,13 @@ class new(PButton.new):
                  
             fire_if_possible(self.on_selected, self)
             
-            if sender.enabled:
-                self.__nh = 100
-            else:
-                self.__nh = 0
-            self.requestFocus()
+            sender.requestFocus()
             
         self._list = PList.new(bounds=[bounds[0], bounds[1]+bounds[3], bounds[2], 0])
         self._list.enabled = False
         self._list.visible = False
         self._list.on_selected = sel
-        
-        self.__nh = 0
-    
+            
     @property
     def selectedIndex(self):
         return self._list.selectedIndex
@@ -53,39 +47,48 @@ class new(PButton.new):
     def onMouseClick(self, data):
         if data["button"] == events.LEFTMOUSE:
             self._list.enabled = not self._list.enabled
+            self._list.visible = self._list.enabled
+            
             if self._list.enabled:
-                max = 100
                 h = self._list.itemHeight * len(self._list.items) + 10
-                self.__nh = h if h < max else max
+                self._list.bounds[3] = h
             else:
-                self.__nh = 0
+                self._list.bounds[3] = 0
     
     def draw(self):
         if not self.visible: return
-        PButton.new.draw(self)
         
+        if self.drawFrame:
+            if self.theme == None:
+                h_draw_button(default["button_normal"], self.bounds, self.hovered, self.clicked)
+            else:
+                tn = self.theme["button_normal"]
+                th = self.theme["button_hover"]
+                tc = self.theme["button_click"]
+                t = tn
+                if not self.hovered and not self.clicked:
+                    t = tn
+                elif self.hovered and not self.clicked:
+                    t = th
+                elif self.hovered and self.clicked:
+                    t = tc
+                else:
+                    t = tc                    
+                h_draw_9patch_skin(t, self.bounds)
+        
+        PLabel.new.draw(self)
         h_draw_arrow((self.bounds[0]+self.bounds[2])-10, self.bounds[1]+(self.bounds[3]/2), 4, color=self.foreColor)
         
         self._list.draw()
     
-    def update(self):
-        if not self.focused:
-            self.__nh = 0
-            self._list.enabled = False
-            
+    def update(self):        
+        PLabel.new.update(self)
+                    
         self._list.bounds[0] = self.bounds[0]
         self._list.bounds[1] = self.bounds[1]+self.bounds[3]
         self._list.bounds[2] = self.bounds[2]
-        self._list.bounds[3] = self.__nh
-        
-        if self._list.bounds[3] > 2:
-            self._list.visible = True
-        else:
-            self._list.visible = False
-        
+                
         self._list.theme = self.theme
         self._list.zorder = self.zorder
         self._list.update()
-        
-        PButton.new.update(self)
         
