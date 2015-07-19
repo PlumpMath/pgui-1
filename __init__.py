@@ -1,4 +1,4 @@
-__all__ = ['PButton', 'PControl', 'PContainer', 'PLabel', 'PVScroll',
+__all__ = ['PButton', 'PControl', 'PContainer', 'PLabel',
             'PSlider', 'PDropDown', 'PList', 'PImage',
             'PCheck', 'PRadio', 'PGradient', 'PProgress', 'PSpinner', 'PTextEdit',
             'PTimer', 'putil', 'PRadioGroup', 'PManager', 'pthemes', 'PSeparator',
