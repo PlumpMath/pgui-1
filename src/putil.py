@@ -573,6 +573,14 @@ def h_draw_gradient_rect_fast(bounds, gradient, border_width=0.5, border_radius=
     grad.orientation = gradient["orientation"]
     h_draw_gradient_rect(bounds, grad, border_width, border_radius, border_color, wire)
 
+def h_draw_flat_frame(bounds, color, bordercol=(0.5, 0.5, 0.5, 1.0), radius=2):
+    grad = {
+        "offsets": [0.0, 1.0],
+        "colors": [color, color],
+        "orientation": PGradient.GRAD_VERTICAL
+    }
+    h_draw_gradient_rect_fast(bounds, grad, border_color=bordercol, border_radius=radius)
+
 # type: 1 = Raised, 2 = Sunken, 0 = None
 def h_draw_frame_d(bounds, color, type=1, bordercol=(0.5, 0.5, 0.5, 1.0), radius=2):
     if len(bounds) < 4: return

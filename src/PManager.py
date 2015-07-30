@@ -8,6 +8,7 @@ from .putil import *
 from .pthemes import *
 import pgui.src.PContainer as PContainer
 import pgui.src.PRadioGroup as PRadioGroup
+import pgui.src.PToolTip as PToolTip
 
 # Alignment
 AL_NONE = 0
@@ -95,6 +96,8 @@ class new:
         self.index = 0
         
         self.pgui = None
+        
+        self.toolTipHnd = self.addControl("______tooltip______#$%", PToolTip.new())
         
         self.update()
     
@@ -261,3 +264,11 @@ class new:
         for c in ctrls:
             c.update()
         
+        if logic.current_hover != None:
+            text, timeout = logic.current_hover.toolTipText, logic.current_hover.toolTipTimeOut
+            if text != "":
+                self.toolTipHnd.text = text
+                self.toolTipHnd.timeOut = timeout
+                self.toolTipHnd.show(ex-4, logic.current_hover.bounds[1]+logic.current_hover.bounds[3]+10)
+            
+            logic.current_hover = None

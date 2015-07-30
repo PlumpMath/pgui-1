@@ -3,6 +3,7 @@ import pgui.src.PManager as PManager
 
 logic.handled = False
 logic.current_focus = None
+logic.current_hover = None
 
 class new:
 	

@@ -33,8 +33,7 @@ class new:
         self.hovered = False
         self.clicked = False
         self.clickhold = False
-        self.enter = False
-        
+        self.enter = False        
         self.focused = False
         self.manager = None
         self.drawFrame = True
@@ -46,6 +45,9 @@ class new:
         self.parent = None        
         self.relativePos = [0, 0]
         self.worldPos = [0, 0]
+        
+        self.toolTipText = ""
+        self.toolTipTimeOut = 2.0
         
     @property
     def bounds(self):
@@ -197,6 +199,9 @@ class new:
             if not self.enter:
                 self.onMouseEnter()
                 fire_if_possible(self.on_mouse_enter, self)
+                
+                logic.current_hover = self
+                
                 self.enter = True
                 
             self.hovered = True
@@ -271,5 +276,3 @@ class new:
                 if self.focused:
                     h_draw_selected(self.bounds)
         self.onDraw()
-        
-        #h_draw_quad_wire(self.bounds)

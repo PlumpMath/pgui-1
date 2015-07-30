@@ -60,7 +60,7 @@ class new(PLabel.new):
         
         if self.drawFrame:
             if self.theme == None:
-                h_draw_button(default["button_normal"], self.bounds, self.hovered, self.clicked)
+                h_draw_button(self.backColor, self.bounds, self.hovered, self.clicked)
             else:
                 tn = self.theme["button_normal"]
                 th = self.theme["button_hover"]
