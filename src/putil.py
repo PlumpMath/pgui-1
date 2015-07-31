@@ -585,20 +585,20 @@ def h_draw_flat_frame(bounds, color, bordercol=(0.5, 0.5, 0.5, 1.0), radius=2):
 def h_draw_frame_d(bounds, color, type=1, bordercol=(0.5, 0.5, 0.5, 1.0), radius=2):
     if len(bounds) < 4: return
 
-    DRK = bright(color, 0.5)
+    DRK = bright(color, 0.7)
     LGT = bright(color, 3.0)
     
     if type == 1:
         grad = {
-            "offsets": [0.0, 0.1, 0.8, 1.0],
-            "colors": [LGT, color, color, DRK],
+            "offsets": [0.0, 0.4, 1.0],
+            "colors": [color, color, DRK],
             "orientation": PGradient.GRAD_VERTICAL
         }
         h_draw_gradient_rect_fast(bounds, grad, border_color=bordercol, border_radius=radius)
     elif type == 2:
         grad = {
-            "offsets": [0.0, 0.1, 0.8, 1.0],
-            "colors": [DRK, color, color, LGT],
+            "offsets": [0.0, 0.4, 1.0],
+            "colors": [DRK, color, color],
             "orientation": PGradient.GRAD_VERTICAL
         }
         h_draw_gradient_rect_fast(bounds, grad, border_color=bordercol, border_radius=radius)
