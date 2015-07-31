@@ -101,7 +101,7 @@ def u_gen_name(availableNames, namestring):
     cnt = 0
     if isinstance(availableNames, list) or isinstance(availableNames, tuple):
         for i in availableNames:
-            if i.startswith(namestring):
+            if i == namestring:
                 cnt += 1
         if cnt == 0: cnt = ""
     else:
